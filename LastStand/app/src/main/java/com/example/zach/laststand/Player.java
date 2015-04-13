@@ -25,7 +25,7 @@ import android.opengl.GLES20;
 /**
  * A two-dimensional square for use as a drawn object in OpenGL ES 2.0.
  */
-public class Square {
+public class Player {
 
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
@@ -53,6 +53,11 @@ public class Square {
     private int mColorHandle;
     private int mMVPMatrixHandle;
 
+    private float velX = 0;
+    private float velY = 0;
+    public float posX = 1;
+    public float posY = 1;
+
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     static float squareCoords[] = {
@@ -70,7 +75,7 @@ public class Square {
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
-    public Square() {
+    public Player() {
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
         // (# of coordinate values * 4 bytes per float)
@@ -109,7 +114,11 @@ public class Square {
      * @param mvpMatrix - The Model View Project matrix in which to draw
      * this shape.
      */
+
     public void draw(float[] mvpMatrix) {
+
+       // Matrix.translateM(mTempTranslationMatrix, 0, mMVPMatrix, 0, -.5f, 0, 0);
+
         // Add program to OpenGL environment
         GLES20.glUseProgram(mProgram);
 
@@ -146,6 +155,18 @@ public class Square {
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+    }
+    public void update(){
+        velY += MyGLRenderer.gravity;
+
+
+        posX += velX;
+        posY += velY;
+
+        if(posY < -2){
+            posY = -2;
+        }
+
     }
 
 }

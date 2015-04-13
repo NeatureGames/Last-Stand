@@ -24,7 +24,7 @@ import android.opengl.GLES20;
 /**
  * A two-dimensional triangle for use as a drawn object in OpenGL ES 2.0.
  */
-public class Triangle {
+public class Map {
 
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
@@ -67,7 +67,7 @@ public class Triangle {
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
-    public Triangle() {
+    public Map() {
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (number of coordinate values * 4 bytes per float)
