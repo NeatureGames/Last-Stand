@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2011 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.zach.laststand;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -22,6 +7,8 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
+
+import java.util.ArrayList;
 
 /**
  * Provides drawing instructions for a GLSurfaceView object. This class
@@ -35,8 +22,31 @@ import android.util.Log;
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = "MyGLRenderer";
+<<<<<<< HEAD
     private Map mTriangle;
     public Player   mPlayer;
+=======
+    //private Map mMap = new Map(0);
+    private Player   mPlayer;
+>>>>>>> origin/master
+
+    ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+    ArrayList<Obstacle> ground = new ArrayList<Obstacle>();
+
+    int mapNum = 0;
+
+    int[][][] levels = {
+            {
+             {-2,0},{-3,0}
+            }
+    int[][][][] levels = {
+     /*levels*/  /*level*/  /*obstacles*/  /*x,y*/
+               {
+                          {
+                            /*ground*/     {-0, 0}, {-3, 0}
+                          }
+               }
+    };
 
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
@@ -59,8 +69,16 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+<<<<<<< HEAD
         mTriangle = new Map();
         mPlayer   = new Player(this);
+=======
+        mPlayer   = new Player();
+        for(int i = 0; i < levels[mapNum].length; i++){
+            obstacles.add(new Obstacle(levels[mapNum][i][0],levels[mapNum][i][1]));
+            ground.add(new Obstacle(levels[mapNum][0][i][0],levels[mapNum][0][i][1]));
+        }
+>>>>>>> origin/master
     }
 
     @Override
@@ -71,6 +89,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
         float[] scratch = new float[16];
+
+        mTempMatrix = mMVPMatrix.clone();
+        Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
 
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -96,6 +117,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
         // Draw square
         mPlayer.draw(scratch);
+
+       for(int i = 0; i < obstacles.size(); i++){
+            obstacles.get(i).draw(scratch);
+       for(int i = 0; i < ground.size(); i++){
+           Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+           ground.get(i).draw(mModelMatrix);
+       }
 
 
 
