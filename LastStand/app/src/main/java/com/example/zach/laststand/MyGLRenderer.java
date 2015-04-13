@@ -26,6 +26,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private Player   mPlayer;
 
     ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+    ArrayList<Obstacle> ground = new ArrayList<Obstacle>();
 
     int mapNum = 0;
 
@@ -33,6 +34,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             {
              {-2,0},{-3,0}
             }
+    int[][][][] levels = {
+     /*levels*/  /*level*/  /*obstacles*/  /*x,y*/
+               {
+                          {
+                            /*ground*/     {-0, 0}, {-3, 0}
+                          }
+               }
     };
 
 
@@ -57,6 +65,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mPlayer   = new Player();
         for(int i = 0; i < levels[mapNum].length; i++){
             obstacles.add(new Obstacle(levels[mapNum][i][0],levels[mapNum][i][1]));
+            ground.add(new Obstacle(levels[mapNum][0][i][0],levels[mapNum][0][i][1]));
         }
     }
 
@@ -68,6 +77,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
         float[] scratch = new float[16];
+
+        mTempMatrix = mMVPMatrix.clone();
+        Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
 
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -96,6 +108,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
        for(int i = 0; i < obstacles.size(); i++){
             obstacles.get(i).draw(scratch);
+       for(int i = 0; i < ground.size(); i++){
+           Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+           ground.get(i).draw(mModelMatrix);
        }
 
 
