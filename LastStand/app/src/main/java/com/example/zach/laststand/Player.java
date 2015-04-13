@@ -21,6 +21,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 /**
  * A two-dimensional square for use as a drawn object in OpenGL ES 2.0.
@@ -53,18 +54,30 @@ public class Player {
     private int mColorHandle;
     private int mMVPMatrixHandle;
 
-    private float velX = 0;
-    private float velY = 0;
+    private MyGLRenderer game;
+    //player controls
+    public static float width = 1;
+    public static float height = 1;
     public float posX = 1;
     public float posY = 1;
+    public float mAngle;
+
+    private float velX = 0;
+    private float velY = 0;
+    private float jumpHeight = 1;
+    private float jumpWidth = 1;
+    private boolean jumping = false;
+
+
+    private boolean grounded = true;
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     static float squareCoords[] = {
-            -0.5f,  0.5f, 0.0f,   // top left
-            -0.5f, -0.5f, 0.0f,   // bottom left
-             0.5f, -0.5f, 0.0f,   // bottom right
-             0.5f,  0.5f, 0.0f }; // top right
+            -width/2,  height/2, 0.0f,   // top left
+            -width/2, -height/2, 0.0f,   // bottom left
+            width/2, -height/2, 0.0f,   // bottom right
+            width/2,  height/2, 0.0f }; // top right
 
     private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
 
@@ -75,7 +88,9 @@ public class Player {
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
-    public Player() {
+    public Player(MyGLRenderer parent) {
+        game = parent;
+
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
         // (# of coordinate values * 4 bytes per float)
@@ -163,10 +178,35 @@ public class Player {
         posX += velX;
         posY += velY;
 
-        if(posY < -2){
-            posY = -2;
-        }
 
+        //Keep it on the screen for now
+        if(posY < -2 + height/2){
+            posY = -2 + height/2;
+            grounded = true;
+        }
+        if(!grounded){
+            int multFac = (velX>0)?1:-1;
+            Log.d("FPSCounter", "fps: " + game.fps);
+            mAngle += multFac*(40*game.fps)/360;
+        }
+        else{
+            mAngle = 0;
+        }
+    }
+    public void jump(String direction) {
+        if(grounded) {
+           // velY = .1f;
+            grounded = false;
+
+           // mAngle
+            if (direction == "R") {
+                velX = .2f;
+                velY = .1f;
+            } else {
+                velX = -.2f;
+                velY = .2f;
+            }
+        }
     }
 
 }

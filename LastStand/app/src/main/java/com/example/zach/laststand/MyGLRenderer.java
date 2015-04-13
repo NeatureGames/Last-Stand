@@ -36,7 +36,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = "MyGLRenderer";
     private Map mTriangle;
-    private Player   mPlayer;
+    public Player   mPlayer;
 
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
@@ -47,18 +47,20 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private float[] mTempMatrix = new float[16];
     private final float[] mModelMatrix = new float[16];
 
-    private float mAngle;
+
 
     public static float gravity =  -0.01f;
 
-
+    long startTime = System.nanoTime();
+    private float frames = 0;
+    public float fps = 0;
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         mTriangle = new Map();
-        mPlayer   = new Player();
+        mPlayer   = new Player(this);
     }
 
     @Override
@@ -74,7 +76,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -2, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mViewMatrix, 0, -mPlayer.posX, 0, -2, -mPlayer.posX, 0f, 0f, 0f, 1.0f, 0.0f);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
@@ -85,7 +87,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
         Matrix.translateM(mModelMatrix, 0, -mPlayer.posX, mPlayer.posY, 0); // translation to the left
 
-        Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, 1.0f);
+        Matrix.setRotateM(mRotationMatrix, 0, mPlayer.mAngle, 0, 0, 1.0f);
 
         mTempMatrix = mModelMatrix.clone();
         Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
@@ -95,6 +97,18 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Draw square
         mPlayer.draw(scratch);
 
+
+
+
+        //fps stuff
+        frames++;
+        if(System.nanoTime() - startTime >= 1000000000) {
+            //Log.d("FPSCounter", "fps: " + frames);
+            fps = frames;
+            frames = 0;
+
+            startTime = System.nanoTime();
+        }
 
         /*
        // mModelMatrix = mBaseMatrix.clone();
@@ -192,15 +206,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
      *
      * @return - A float representing the rotation angle.
      */
-    public float getAngle() {
-        return mAngle;
-    }
+   // public float getAngle() {
+     //   return mAngle;
+   // }
 
     /**
      * Sets the rotation angle of the triangle shape (mTriangle).
      */
-    public void setAngle(float angle) {
-        mAngle = angle;
-    }
+   // public void setAngle(float angle) {
+      //  mAngle = angle;
+    //}
 
 }

@@ -26,7 +26,7 @@ import android.view.MotionEvent;
  */
 public class MyGLSurfaceView extends GLSurfaceView {
 
-    private final MyGLRenderer mRenderer;
+    public final MyGLRenderer mRenderer;
 
     public MyGLSurfaceView(Context context) {
         super(context);
@@ -61,7 +61,13 @@ public class MyGLSurfaceView extends GLSurfaceView {
                 float dx = x - mPreviousX;
                 float dy = y - mPreviousY;
 
-                // reverse direction of rotation above the mid-line
+                if (dx > 0){    //swipe right
+                    mRenderer.mPlayer.jump("R");
+                }
+                else{
+                    mRenderer.mPlayer.jump("L");
+                }
+               /* // reverse direction of rotation above the mid-line
                 if (y > getHeight() / 2) {
                     dx = dx * -1 ;
                 }
@@ -74,7 +80,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
                 mRenderer.setAngle(
                         mRenderer.getAngle() +
                         ((dx + dy) * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
-                requestRender();
+                requestRender();*/
         }
 
         mPreviousX = x;
