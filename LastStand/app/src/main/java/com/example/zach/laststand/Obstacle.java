@@ -7,12 +7,6 @@ import java.nio.ShortBuffer;
 import android.opengl.GLES20;
 
 public class Obstacle {
-
-    static public float x;
-    static public float y;
-    static public float width = 2;
-    static public float height = 10;
-
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
             // the coordinates of the objects that use this vertex shader
@@ -41,11 +35,6 @@ public class Obstacle {
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
-    static float squareCoords[] = {
-            x-width, y+height, 0.0f,   // top left
-            x-width, y-height, 0.0f,   // bottom left
-            x+width, y-height, 0.0f,   // bottom right
-            x+width, y+height, 0.0f}; // top right
 
     private final short drawOrder[] = {0, 1, 2, 0, 2, 3}; // order to draw vertices
 
@@ -56,10 +45,21 @@ public class Obstacle {
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
-
-    public Obstacle(int x, int y) {
+    float x;
+    float y;
+    public Obstacle(float x, float y) {
         this.x = x;
         this.y = y;
+
+        float width = 1;
+        float height = 5;
+
+        float squareCoords[] = {
+                x-(width/2), y+(height/2), 0.0f,   // top left
+                x-(width/2), y-(height/2), 0.0f,   // bottom left
+                x+(width/2), y-(height/2), 0.0f,   // bottom right
+                x+(width/2), y+(height/2), 0.0f}; // top right
+
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (# of coordinate values * 4 bytes per float)
@@ -98,7 +98,10 @@ public class Obstacle {
      * @param mvpMatrix - The Model View Project matrix in which to draw
      *                  this shape.
      */
-    public void draw() {
+    public void draw(float[] mvpMatrix) {
+
+        // Matrix.translateM(mTempTranslationMatrix, 0, mMVPMatrix, 0, -.5f, 0, 0);
+
         // Add program to OpenGL environment
         GLES20.glUseProgram(mProgram);
 
@@ -119,6 +122,14 @@ public class Obstacle {
 
         // Set color for drawing the triangle
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+
+        // get handle to shape's transformation matrix
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+        MyGLRenderer.checkGlError("glGetUniformLocation");
+
+        // Apply the projection and view transformation
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
         // Draw the square
         GLES20.glDrawElements(

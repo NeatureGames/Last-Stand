@@ -22,14 +22,16 @@ import java.util.ArrayList;
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = "MyGLRenderer";
-    private Map mMap = new Map(0);
+    //private Map mMap = new Map(0);
     private Player   mPlayer;
 
     ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
 
+    int mapNum = 0;
+
     int[][][] levels = {
             {
-             {0,0},{0,5}
+             {-2,0},{-3,0}
             }
     };
 
@@ -53,8 +55,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         mPlayer   = new Player();
-        for(int i = 0; i < levels[mMap.mapNum].length; i++){
-            obstacles.add(new Obstacle(levels[mMap.mapNum][i][0],levels[mMap.mapNum][i][1]));
+        for(int i = 0; i < levels[mapNum].length; i++){
+            obstacles.add(new Obstacle(levels[mapNum][i][0],levels[mapNum][i][1]));
         }
     }
 
@@ -93,7 +95,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mPlayer.draw(scratch);
 
        for(int i = 0; i < obstacles.size(); i++){
-          obstacles.get(i).draw();
+            obstacles.get(i).draw(scratch);
        }
 
 
