@@ -9,6 +9,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Provides drawing instructions for a GLSurfaceView object. This class
@@ -22,13 +23,12 @@ import java.util.ArrayList;
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = "MyGLRenderer";
-<<<<<<< HEAD
+
     private Map mTriangle;
     public Player   mPlayer;
-=======
+
     //private Map mMap = new Map(0);
-    private Player   mPlayer;
->>>>>>> origin/master
+
 
     ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
     ArrayList<Obstacle> ground = new ArrayList<Obstacle>();
@@ -37,16 +37,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     int[][][] levels = {
             {
-             {-2,0},{-3,0}
+                    {-2, 0}, {-3, 0}
             }
-    int[][][][] levels = {
-     /*levels*/  /*level*/  /*obstacles*/  /*x,y*/
+    };
+   /* int[][][][] levels = {
+     /*levels  /*level  /*obstacles  /*x,y
                {
                           {
-                            /*ground*/     {-0, 0}, {-3, 0}
+                            /*ground     {-0, 0}, {-3, 0}
                           }
                }
-    };
+    };*/
 
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
@@ -63,22 +64,20 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     long startTime = System.nanoTime();
     private float frames = 0;
-    public float fps = 0;
+    public float fps = 60;
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-<<<<<<< HEAD
-        mTriangle = new Map();
+
         mPlayer   = new Player(this);
-=======
-        mPlayer   = new Player();
+
         for(int i = 0; i < levels[mapNum].length; i++){
-            obstacles.add(new Obstacle(levels[mapNum][i][0],levels[mapNum][i][1]));
-            ground.add(new Obstacle(levels[mapNum][0][i][0],levels[mapNum][0][i][1]));
+            obstacles.add(new Obstacle((float) levels[mapNum][i][0],(float) levels[mapNum][i][1]));
+           // ground.add(new Obstacle((float) levels[mapNum][0][i][0],(float) levels[mapNum][0][i][1]));
         }
->>>>>>> origin/master
+
     }
 
     @Override
@@ -106,7 +105,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         /** Draw Player **/
         //mModelMatrix = mBaseMatrix.clone();
         Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-        Matrix.translateM(mModelMatrix, 0, -mPlayer.posX, mPlayer.posY, 0); // translation to the left
+        Matrix.translateM(mModelMatrix, 0, -mPlayer.posX, mPlayer.posY, 0); // translation to the player position
 
         Matrix.setRotateM(mRotationMatrix, 0, mPlayer.mAngle, 0, 0, 1.0f);
 
@@ -118,10 +117,22 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Draw square
         mPlayer.draw(scratch);
 
-       for(int i = 0; i < obstacles.size(); i++){
-            obstacles.get(i).draw(scratch);
+       for(int i = 0; i < obstacles.size(); i++) {
+           Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+           Matrix.translateM(mModelMatrix, 0, -mPlayer.posX, mPlayer.posY, 0); // translation to the player position
+
+           mTempMatrix = mMVPMatrix.clone();
+           Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+
+           obstacles.get(i).draw(scratch);
+       }
        for(int i = 0; i < ground.size(); i++){
            Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+           Matrix.translateM(mModelMatrix, 0, -mPlayer.posX, mPlayer.posY, 0); // translation to the player position
+
+           mTempMatrix = mMVPMatrix.clone();
+           Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+
            ground.get(i).draw(mModelMatrix);
        }
 
