@@ -24,30 +24,37 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = "MyGLRenderer";
 
-    private Map mTriangle;
+    //private Map mTriangle;
     public Player   mPlayer;
 
     //private Map mMap = new Map(0);
 
 
-    ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
-    ArrayList<Obstacle> ground = new ArrayList<Obstacle>();
+    ArrayList<Obstacle> ground = new ArrayList<>();
+    ArrayList<Obstacle> trampoline = new ArrayList<>();
+    ArrayList<Obstacle> coins = new ArrayList<>();
+
 
     int mapNum = 0;
 
-    int[][][] levels = {
+    int[][][][] levels =
+    {
             {
-                    {-2, 0}, {-3, 0}
+                    { //ground
+                            {0, 0},
+                            {-1, 0},
+                            {-2, 0}
+                    },
+                    { //trampolines
+
+                    },
+                    { //coins
+
+                    }
             }
     };
-   /* int[][][][] levels = {
-     /*levels  /*level  /*obstacles  /*x,y
-               {
-                          {
-                            /*ground     {-0, 0}, {-3, 0}
-                          }
-               }
-    };*/
+     /*levels  /*level  /*obstacles  /*x,y*/
+
 
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
@@ -73,9 +80,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         mPlayer   = new Player(this);
 
-        for(int i = 0; i < levels[mapNum].length; i++){
-            obstacles.add(new Obstacle((float) levels[mapNum][i][0],(float) levels[mapNum][i][1]));
-           // ground.add(new Obstacle((float) levels[mapNum][0][i][0],(float) levels[mapNum][0][i][1]));
+        for(int i = 0; i < levels[mapNum][0].length; i++){
+            ground.add(new Obstacle(levels[mapNum][0][i][0], levels[mapNum][0][i][1]));
+        }
+        for(int i = 0; i < levels[mapNum][1].length; i++){
+            trampoline.add(new Obstacle(levels[mapNum][1][i][0],levels[mapNum][1][i][1]));
+        }
+        for(int i = 0; i < levels[mapNum][2].length; i++){
+            coins.add(new Obstacle(levels[mapNum][2][i][0],levels[mapNum][2][i][1]));
         }
 
     }
@@ -89,14 +101,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         float[] scratch = new float[16];
 
-        mTempMatrix = mMVPMatrix.clone();
-        Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+       // mTempMatrix = mMVPMatrix.clone();
+        //Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
 
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(mViewMatrix, 0, -mPlayer.posX, 0, -2, -mPlayer.posX, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mViewMatrix, 0, -mPlayer.posX, 0, -4, -mPlayer.posX, 0f, 0f, 0f, 1.0f, 0.0f);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
@@ -117,24 +129,36 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Draw square
         mPlayer.draw(scratch);
 
-       for(int i = 0; i < obstacles.size(); i++) {
+       for(int i = 0; i < 10; i++) {
+
            Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-           Matrix.translateM(mModelMatrix, 0, -mPlayer.posX, mPlayer.posY, 0); // translation to the player position
+           Matrix.translateM(mModelMatrix, 0, -i-i, 0, 0); // translation to the player position
+
+           Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+           mTempMatrix = mModelMatrix.clone();
+           Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
 
            mTempMatrix = mMVPMatrix.clone();
            Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
-
-           obstacles.get(i).draw(scratch);
+           // Draw square
+           ground.get(0).draw(scratch);
        }
-       for(int i = 0; i < ground.size(); i++){
-           Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-           Matrix.translateM(mModelMatrix, 0, -mPlayer.posX, mPlayer.posY, 0); // translation to the player position
 
-           mTempMatrix = mMVPMatrix.clone();
-           Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+      /*  Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+        Matrix.translateM(mModelMatrix, 0, ground.get(1).x, ground.get(1).y, 0); // translation to the player position
 
-           ground.get(i).draw(mModelMatrix);
-       }
+        Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+        mTempMatrix = mModelMatrix.clone();
+        Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
+
+        mTempMatrix = mMVPMatrix.clone();
+        Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+        // Draw square
+        ground.get(1).draw(scratch);*/
+
+      // }
 
 
 
@@ -142,7 +166,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //fps stuff
         frames++;
         if(System.nanoTime() - startTime >= 1000000000) {
-            //Log.d("FPSCounter", "fps: " + frames);
+            Log.d("FPSCounter", "fps: " + frames);
             fps = frames;
             frames = 0;
 

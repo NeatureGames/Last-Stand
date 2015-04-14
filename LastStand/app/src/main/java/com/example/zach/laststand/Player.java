@@ -56,10 +56,10 @@ public class Player {
 
     private MyGLRenderer game;
     //player controls
-    public static float width = 1;
-    public static float height = 1;
-    public float posX = 1;
-    public float posY = 1;
+    public static float width = .8f;
+    public static float height = .8f;
+    public float posX = 0;
+    public float posY = 0;
     public float mAngle;
 
     private float velX = 0;
@@ -83,7 +83,7 @@ public class Player {
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
-    float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
+    float color[] = { 0.82f, 0.1843f, 0.1843f, 1.0f };
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
@@ -190,6 +190,7 @@ public class Player {
             mAngle += multFac*(40*game.fps)/360;
         }
         else{
+            velX = 0;
             mAngle = 0;
         }
     }
@@ -201,10 +202,10 @@ public class Player {
            // mAngle
             if (direction == "R") {
                 velX = .2f;
-                velY = .1f;
+                velY = (float) Math.sqrt(-2*MyGLRenderer.gravity*jumpHeight*2);
             } else {
-                velX = -.2f;
-                velY = .2f;
+                velX = -.1f;
+                velY = (float) Math.sqrt(-2*MyGLRenderer.gravity*jumpHeight);
             }
         }
     }
