@@ -42,9 +42,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             {
                     { //ground
                             {0, -2.25f},
-                            {-2, -2.25f},
-                            {-3, -2.25f},
-                            {-4, -2.25f}
+                            {2, -2.25f},
+                            {3, -2.25f},
+                            {4, -2.25f},
+                            {5, -2.25f},
+                            {7, -2.25f},
+                            {9, -2.25f},
+                            {10, -2.25f},
                     },
                     { //trampolines
 
@@ -68,7 +72,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
 
-    public static float gravity =  -0.01f;
+    public static float gravity =  -0.02f;
+    public static float cameraDist = -4;
 
     long startTime = System.nanoTime();
     private float frames = 0;
@@ -109,7 +114,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(mViewMatrix, 0, -mPlayer.posX, 0, -4, -mPlayer.posX, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mViewMatrix, 0, -mPlayer.posX, 0, cameraDist, -mPlayer.posX, 0f, 0f, 0f, 1.0f, 0.0f);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
@@ -132,7 +137,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
        for(int i = 0; i < ground.size(); i++) {
            Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-           Matrix.translateM(mModelMatrix, 0, ground.get(i).x, ground.get(i).y, 0); // translation to the player position
+           Matrix.translateM(mModelMatrix, 0, -ground.get(i).x, ground.get(i).y, 0); // translation to the player position
 
            Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
 
@@ -142,7 +147,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
            mTempMatrix = mMVPMatrix.clone();
            Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
            // Draw square
-           ground.get(0).draw(scratch);
+           ground.get(i).draw(scratch);
        }
 
       /*  Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
@@ -166,7 +171,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //fps stuff
         frames++;
         if(System.nanoTime() - startTime >= 1000000000) {
-            Log.d("FPSCounter", "fps: " + frames);
+            //Log.d("FPSCounter", "fps: " + frames);
             fps = frames;
             frames = 0;
 

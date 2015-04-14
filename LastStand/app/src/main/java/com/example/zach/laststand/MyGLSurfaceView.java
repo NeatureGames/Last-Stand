@@ -59,7 +59,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
             case MotionEvent.ACTION_MOVE:
 
                 float dx = x - mPreviousX;
-                float dy = y - mPreviousY;
+                //float dy = y - mPreviousY;
 
                 if (dx > 0){    //swipe right
                     mRenderer.mPlayer.jump("R");

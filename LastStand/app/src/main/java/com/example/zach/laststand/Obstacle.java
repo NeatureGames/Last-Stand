@@ -47,18 +47,19 @@ public class Obstacle {
      */
     float x;
     float y;
+    float width = 1;
+    float height = 5;
+
     public Obstacle(float x, float y) {
         this.x = x;
         this.y = y;
 
-        float width = 1;
-        float height = 5;
 
         float squareCoords[] = {
-                x-(width/2), y+(height/2), 0.0f,   // top left
-                x-(width/2), y-(height/2), 0.0f,   // bottom left
-                x+(width/2), y-(height/2), 0.0f,   // bottom right
-                x+(width/2), y+(height/2), 0.0f}; // top right
+                -width/2,  height/2, 0.0f,   // top left
+                -width/2, -height/2, 0.0f,   // bottom left
+                width/2, -height/2, 0.0f,   // bottom right
+                width/2,  height/2, 0.0f }; // top right
 
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(

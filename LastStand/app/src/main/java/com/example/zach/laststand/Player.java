@@ -66,7 +66,7 @@ public class Player {
     private float velY = 0;
     private float jumpHeight = 1;
     private float jumpWidth = 1;
-    private boolean jumping = false;
+    //private boolean jumping = false;
     private float jumpTime = 0;
 
 
@@ -176,24 +176,31 @@ public class Player {
         velY += game.gravity;
 
 
-        posX += velX;
-        posY += velY;
 
+        grounded = false;
 
-        //Keep it on the screen for now
-        if(posY < -2 + height/2){
-            posY = -2 + height/2;
-            grounded = true;
+        handleCollision();
+
+        //Simple Respawn
+        if(posY < game.cameraDist - height/2){
+            posY = 0;
+            posX = 0;
+            velX = 0;
+            velY = 0;
         }
         if(!grounded){
             int multFac = (velX<0)?1:-1;
-            Log.d("FPSCounter", "fps: " + game.fps);
             mAngle += multFac*(360/jumpTime);
         }
         else{
+            velY = 0;
             velX = 0;
             mAngle = 0;
         }
+
+
+        posX += velX;
+        posY += velY;
     }
     public void jump(String direction) {
         if(grounded) {
@@ -216,6 +223,64 @@ public class Player {
 
                 velX = jumpWidth/jumpTime;
             }
+        }
+    }
+    private String checkCollision(Obstacle obj){
+        float vX = (this.posX+ this.velX) - (obj.x);
+        float vY = (this.posY+ this.velY)- (obj.y);
+
+        float hWidths = (this.width / 2) + (obj.width / 2);
+        float hHeights = (this.height / 2) + (obj.height / 2);
+
+        String colDir = "";
+
+
+        if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights){
+
+            float oX = hWidths - Math.abs(vX);
+            float oY = hHeights - Math.abs(vY);
+
+            if (oX >= oY) {
+
+                if (vY > 0) {
+                    colDir = "t";
+                    //a->position.y = b->position.y + b->height / 2 + a->height / 2;
+                    //a->position.y += oY;
+                }
+                else {
+                    colDir = "b";
+                    //a->position.y = b->position.y - b->height / 2 - a->height / 2;
+                    //a->position.y -= oY;
+                }
+            }
+            else {
+                if (vX > 0) {
+                    colDir = "l";
+                    //a->position.x = b->position.x + b->width / 2 + a->width / 2;
+                    //a->position.x += oX;
+                }
+                else {
+                    colDir = "r";
+                    //a->position.x = b->position.x - b->width / 2 - a->width / 2;
+                    //a->position.x -= oX;
+                }
+            }
+        }
+        return colDir;
+    }
+    private void handleCollision(){
+        for(int i = 0; i<game.ground.size(); i++){
+            String dir = checkCollision(game.ground.get(i));
+
+            if(dir == "t"){
+                posY = game.ground.get(i).y + game.ground.get(i).height / 2 + height / 2;
+                posX = game.ground.get(i).x;
+                grounded = true;
+                //jumping = false;
+               // Log.d("collisions", "dir: HIT");
+            }
+
+
         }
     }
 
