@@ -37,13 +37,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     int mapNum = 0;
 
-    int[][][][] levels =
+    float[][][][] levels =
     {
             {
                     { //ground
-                            {0, 0},
-                            {-1, 0},
-                            {-2, 0}
+                            {0, -2.25f},
+                            {-2, -2.25f},
+                            {-3, -2.25f},
+                            {-4, -2.25f}
                     },
                     { //trampolines
 
@@ -129,10 +130,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Draw square
         mPlayer.draw(scratch);
 
-       for(int i = 0; i < 10; i++) {
-
+       for(int i = 0; i < ground.size(); i++) {
            Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-           Matrix.translateM(mModelMatrix, 0, -i-i, 0, 0); // translation to the player position
+           Matrix.translateM(mModelMatrix, 0, ground.get(i).x, ground.get(i).y, 0); // translation to the player position
 
            Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
 

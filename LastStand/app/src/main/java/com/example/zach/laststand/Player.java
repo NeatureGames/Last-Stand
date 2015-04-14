@@ -67,6 +67,7 @@ public class Player {
     private float jumpHeight = 1;
     private float jumpWidth = 1;
     private boolean jumping = false;
+    private float jumpTime = 0;
 
 
     private boolean grounded = true;
@@ -172,7 +173,7 @@ public class Player {
         GLES20.glDisableVertexAttribArray(mPositionHandle);
     }
     public void update(){
-        velY += MyGLRenderer.gravity;
+        velY += game.gravity;
 
 
         posX += velX;
@@ -185,9 +186,9 @@ public class Player {
             grounded = true;
         }
         if(!grounded){
-            int multFac = (velX>0)?1:-1;
+            int multFac = (velX<0)?1:-1;
             Log.d("FPSCounter", "fps: " + game.fps);
-            mAngle += multFac*(40*game.fps)/360;
+            mAngle += multFac*(360/jumpTime);
         }
         else{
             velX = 0;
@@ -201,11 +202,19 @@ public class Player {
 
            // mAngle
             if (direction == "R") {
-                velX = .2f;
-                velY = (float) Math.sqrt(-2*MyGLRenderer.gravity*jumpHeight*2);
+               // velX = .2f;
+                velY = (float) Math.sqrt(-2*game.gravity*jumpHeight*2);
+
+                jumpTime= 2*velY/game.gravity;
+
+                velX = -(jumpWidth*2)/jumpTime;
             } else {
-                velX = -.1f;
-                velY = (float) Math.sqrt(-2*MyGLRenderer.gravity*jumpHeight);
+               // velX = -.1f;
+                velY = (float) Math.sqrt(-2*game.gravity*jumpHeight);
+
+                jumpTime= 2*velY/game.gravity;
+
+                velX = jumpWidth/jumpTime;
             }
         }
     }
