@@ -40,20 +40,22 @@ public class Obstacle {
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
-    float color[] = {0.2f, 0.709803922f, 0.898039216f, 1.0f};
+    float color[];
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
     float x;
     float y;
-    float width = 1;
-    float height = 5;
+    float width;
+    float height ;
 
-    public Obstacle(float x, float y) {
+    public Obstacle(float x, float y, float w, float h, float[] color) {
         this.x = x;
         this.y = y;
-
+        this.width = w;
+        this.height = h;
+        this.color = color;
 
         float squareCoords[] = {
                 -width/2,  height/2, 0.0f,   // top left
