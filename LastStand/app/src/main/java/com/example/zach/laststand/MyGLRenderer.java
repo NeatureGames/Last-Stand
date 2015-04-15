@@ -4,6 +4,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
@@ -12,7 +13,7 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.DisplayMetrics;
 import android.util.Log;
-
+import android.app.Activity;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Map;
@@ -52,7 +53,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     float[][][][] levels =
     {
 
-            {{{0f,-17.5f},{2f,-17.5f},{3f,-17.5f},{4f,-17.5f},{6f,-17.5f},{7f,-17.5f},{8f,-17.5f},{9f,-17.5f},{10f,-17.5f},{12f,-17.5f},{13f,-17.5f},{14f,-17.5f},{15f,-17.5f},{17f,-17.5f},{19f,-17.5f},{19f,-17.5f},{24f,-17.5f},{24f,-17.5f},{27f,-17.5f},{26f,-17.5f},{20f,-17.5f},{21f,-17.5f},{22f,-17.5f},{23f,-17.5f},{28f,-17.5f},},{},{{3f,-14.5f},{7f,-14.5f},{10f,-14.5f},{13f,-14.5f},{22f,-14f},{27f,-14.5f}}}
+            {{{0f,-17.5f},{2f,-17.5f},{3f,-17.5f},{4f,-17.5f},{6f,-17.5f},{7f,-17.5f},{8f,-17.5f},{9f,-17.5f},{10f,-17.5f},{12f,-17.5f},{13f,-17.5f},{14f,-17.5f},{15f,-17.5f},{17f,-17.5f},{19f,-17.5f},{19f,-17.5f},{24f,-17.5f},{24f,-17.5f},{27f,-17.5f},{26f,-17.5f},{20f,-17.5f},{21f,-17.5f},{22f,-17.5f},{23f,-17.5f},{28f,-17.5f},},{},{{3f,-14.5f},{7f,-14.5f},{10f,-14.5f},{13f,-14.5f},{22f,-14f},{27f,-14.5f}}},
+            {{{0f,-17.5f},{1f,-17.5f},{2f,-17.5f},{4f,-17.5f},{5f,-17.5f},{6f,-17.5f},{7f,-17.5f},{9f,-17.5f}},{},{}},
 
 
             /*{
@@ -101,8 +103,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     public IntBuffer m_viewport;
 
-    public MyGLRenderer(Context context){
+    public MyGLRenderer(Context context, int level){
         mActivityContext = context;
+
+        Log.d("Level", "loaded level: " + level);
+        if(level < levels.length ){
+            mapNum = level;
+        }
+        else{
+            mapNum = 0;
+            Log.d("Level", "level error: Level " + level + " does not exist");
+        }
     }
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
