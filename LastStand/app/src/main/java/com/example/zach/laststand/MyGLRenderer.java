@@ -10,8 +10,10 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -36,6 +38,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     //private Map mMap = new Map(0);
 
+    public Obstacle background;
 
     ArrayList<Obstacle> ground = new ArrayList<>();
     ArrayList<Obstacle> trampoline = new ArrayList<>();
@@ -44,9 +47,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     int mapNum = 0;
 
-    public MyGLRenderer(Context context){
-        mActivityContext = context;
-    }
+
 
     float[][][][] levels =
     {
@@ -91,32 +92,36 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public static float gravity =  -0.02f;
     public static float cameraDist = -4;
     public static float cameraCenter = -14;
+    public float ratio;
+
 
     long startTime = System.nanoTime();
     private float frames = 0;
     public float fps = 60;
+
+    public IntBuffer m_viewport;
+
+    public MyGLRenderer(Context context){
+        mActivityContext = context;
+    }
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 
-        // Set the background frame color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClearColor(0.5f, 0.3f, 0.2f, 1.0f);
 
         mPlayer   = new Player(this);
 
-        //Temp colors
-        float [] blue = {0.2f, 0.709803922f, 0.898039216f, 1.0f};
-        float [] yellow = {1f, 0.92f, 0.23f, 1.0f};
 
         for(int i = 0; i < levels[mapNum][0].length; i++){
-            ground.add(new Obstacle(levels[mapNum][0][i][0], levels[mapNum][0][i][1], 1, 5, blue));
+            ground.add(new Obstacle(levels[mapNum][0][i][0], levels[mapNum][0][i][1], 1, 5, "ground", this));
         }
         for(int i = 0; i < levels[mapNum][1].length; i++){
-            trampoline.add(new Obstacle(levels[mapNum][1][i][0],levels[mapNum][1][i][1], 1, 5, blue));
+            trampoline.add(new Obstacle(levels[mapNum][1][i][0],levels[mapNum][1][i][1], 1, 5, "tramp", this));
         }
         for(int i = 0; i < levels[mapNum][2].length; i++){
-            coins.add(new Obstacle(levels[mapNum][2][i][0],levels[mapNum][2][i][1], .25f, .25f, yellow));
+            coins.add(new Obstacle(levels[mapNum][2][i][0],levels[mapNum][2][i][1], .25f, .25f, "coin", this));
         }
-
+        //background = new Obstacle(0,0,-cameraDist*ratio*2,-cameraDist*2,"background",this);
     }
 
     @Override
@@ -134,11 +139,30 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
+        //Draw background
+        background.draw(mMVPMatrix);
+
         // Set the camera position (View matrix)
         Matrix.setLookAtM(mViewMatrix, 0, -mPlayer.posX, cameraCenter, cameraDist, -mPlayer.posX, cameraCenter, 0f, 0f, 1.0f, 0.0f);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+
+        /** Draw Background **/
+        //mModelMatrix = mBaseMatrix.clone();
+        Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+        Matrix.translateM(mModelMatrix, 0, -mPlayer.posX, cameraCenter, 0); // translation to the player position
+
+        Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+        mTempMatrix = mModelMatrix.clone();
+        Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
+
+        mTempMatrix = mMVPMatrix.clone();
+        Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+        // Draw square
+        background.draw(scratch);
+
 
 
         /** Draw Player **/
@@ -185,24 +209,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             coins.get(i).draw(scratch);
         }
 
-      /*  Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-        Matrix.translateM(mModelMatrix, 0, ground.get(1).x, ground.get(1).y, 0); // translation to the player position
-
-        Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
-
-        mTempMatrix = mModelMatrix.clone();
-        Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
-
-        mTempMatrix = mMVPMatrix.clone();
-        Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
-        // Draw square
-        ground.get(1).draw(scratch);*/
-
-      // }
-
-
-
-
         //fps stuff
         frames++;
         if(System.nanoTime() - startTime >= 1000000000) {
@@ -213,38 +219,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             startTime = System.nanoTime();
         }
 
-        /*
-       // mModelMatrix = mBaseMatrix.clone();
-        Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-        Matrix.translateM(mModelMatrix, 0, 0.5f, 0, 0); // translation to the left
-
-        Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, 1.0f);
-
-        mTempMatrix = mModelMatrix.clone();
-        Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
-
-        mTempMatrix = mMVPMatrix.clone();
-        Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
-        // Draw square
-        mTriangle.draw(scratch);*/
-        // Create a rotation for the triangle
-
-        // Use the following code to generate constant rotation.
-        // Leave this code out when using TouchEvents.
-        // long time = SystemClock.uptimeMillis() % 4000L;
-        // float angle = 0.090f * ((int) time);
-
-       // Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, 1.0f);
-      //  Matrix.translateM(mTempTranslationMatrix, 0, mMVPMatrix, 0, -.5f, 0, 0);
-
-        // Combine the rotation matrix with the projection and camera view
-        // Note that the mMVPMatrix factor *must be first* in order
-        // for the matrix multiplication product to be correct.
-        //Matrix.multiplyMM(scratch, 0, mTempTranslationMatrix, 0, mRotationMatrix, 0);
-       // Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, scratch, 0);
-
-        // Draw triangle
-      //  mTriangle.draw(scratch);
     }
 
     @Override
@@ -253,7 +227,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // such as screen rotation
         GLES20.glViewport(0, 0, width, height);
 
-        float ratio = (float) width / (float) height;
+        ratio = (float) width / (float) height;
+
+
+        //Create background here because now we have ratio
+        background = new Obstacle(0,0,-cameraDist*ratio*2,-cameraDist*2,"background",this);
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
