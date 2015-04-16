@@ -269,7 +269,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
         //Create background here because now we have ratio
-        background = new Obstacle(0,0,-cameraDist*ratio*2,-cameraDist*2,"background",this);
+        background = new Obstacle(0,0,-cameraDist*2,-cameraDist*2,"background",this);
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method

@@ -139,7 +139,10 @@ public class Obstacle {
         //Load Specific texture
 
         if(type == "background"){
-            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.wood);
+            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.test);
+        }
+        else if(type=="coin"){
+            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.coin);
         }
         else{
             mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.ic_launcher);
