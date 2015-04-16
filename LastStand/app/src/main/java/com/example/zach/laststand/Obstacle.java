@@ -120,12 +120,12 @@ public class Obstacle {
 
         final float[] cubeTextureCoordinateData =
                 {
-                        0.0f, 0.0f,
-                        0.0f, 1.0f,
                         1.0f, 0.0f,
-                        0.0f, 1.0f,
                         1.0f, 1.0f,
-                        1.0f, 0.0f,
+                        0.0f, 0.0f,
+                        1.0f, 1.0f,
+                        0.0f, 1.0f,
+                        0.0f, 0.0f,
                 };
         mCubeTextureCoordinates = ByteBuffer.allocateDirect(cubeTextureCoordinateData.length * mBytesPerFloat)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -142,7 +142,7 @@ public class Obstacle {
             mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.test);
         }
         else if(type=="coin"){
-            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.coin);
+            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.testcoin);
         }
         else{
             mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.ic_launcher);
