@@ -288,7 +288,22 @@ public class Player {
                 jumpTime= 2*velY/game.gravity;
 
                 velX = -(jumpWidth*2)/jumpTime;
-            } else {
+            }
+            else if(direction == "TR"){
+                velY = (float) Math.sqrt(-2*game.gravity*jumpHeight*3);
+
+                jumpTime= 2*velY/game.gravity;
+
+                velX = -(jumpWidth*3)/jumpTime;
+            }
+            else if(direction == "TL"){
+                velY = (float) Math.sqrt(-2*game.gravity*jumpHeight*3);
+
+                jumpTime= 2*velY/game.gravity;
+
+                velX = (jumpWidth*3)/jumpTime;
+            }
+            else {
                // velX = -.1f;
                 velY = (float) Math.sqrt(-2*game.gravity*jumpHeight);
 
@@ -352,8 +367,30 @@ public class Player {
                 //jumping = false;
                // Log.d("collisions", "dir: HIT");
             }
+        }
+        for(int i = 0; i<game.coins.size(); i++){
+            String dir = checkCollision(game.coins.get(i));
 
+            if(dir != ""){
+                game.coinAmount = i+1;
+            }
+        }
+        for(int i = 0; i<game.trampoline.size(); i++){
+            String dir = checkCollision(game.trampoline.get(i));
 
+            if(dir == "t"){
+                posY = game.trampoline.get(i).y + game.trampoline.get(i).height / 2 + height / 2;
+                posX = game.trampoline.get(i).x;
+                grounded = true;
+
+                if(velX > 0){
+                    jump("TR");
+                }
+                else{
+                    jump("TL");
+                }
+
+            }
         }
     }
 

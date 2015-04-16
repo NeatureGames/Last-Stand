@@ -7,8 +7,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.ViewFlipper;
@@ -21,22 +23,73 @@ public class Levels extends FragmentActivity {
 
 
 
-    int rows = 3;
-    int coloums = 3;
-    int worlds = 2;
-    int buttonMarginsHoriz = 10;
-    int buttonMarginsVert = 15;
-    int buttonPadding = 0;
-    int buttonWidth = 50;
-    int buttonHeight = 50;
+    private int rows = 3;
+    private int coloums = 3;
+    private int worlds = 2;
+    private int buttonMarginsHoriz = 10;
+    private int buttonMarginsVert = 15;
+    private int buttonPadding = 0;
+    private int buttonWidth = 50;
+    private int buttonHeight = 50;
+    private ViewFlipper viewFlipper;
+    private float lastX;
     //Button button;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.levels);
+        viewFlipper = (ViewFlipper) findViewById(R.id.flipDatView);
+
         createTables();
     }
+    public boolean onTouchEvent(MotionEvent touchevent)
+    {
+        switch (touchevent.getAction())
+        {
+            // when user first touches the screen to swap
+            case MotionEvent.ACTION_DOWN:
+            {
+                lastX = touchevent.getX();
+                break;
+            }
+            case MotionEvent.ACTION_UP:
+            {
+                float currentX = touchevent.getX();
+
+                // if left to right swipe on screen
+                if (lastX < currentX)
+                {
+                    // If no more View/Child to flip
+                    if (viewFlipper.getDisplayedChild() == 0)
+                        break;
+
+                    // set the required Animation type to ViewFlipper
+                    // The Next screen will come in form Left and current Screen will go OUT from Right
+                    viewFlipper.setInAnimation(this, R.transition.in_from_left);
+                    viewFlipper.setOutAnimation(this, R.transition.out_to_right);
+                    // Show the next Screen
+                    viewFlipper.showNext();
+                }
+
+                // if right to left swipe on screen
+                if (lastX > currentX)
+                {
+                    if (viewFlipper.getDisplayedChild() == 1)
+                        break;
+                    // set the required Animation type to ViewFlipper
+                    // The Next screen will come in form Right and current Screen will go OUT from Left
+                    viewFlipper.setInAnimation(this, R.transition.in_from_right);
+                    viewFlipper.setOutAnimation(this, R.transition.out_to_left);
+                    // Show The Previous Screen
+                    viewFlipper.showPrevious();
+                }
+                break;
+            }
+        }
+        return false;
+    }
+
 
     /*public void addListenerOnButton() {
         final Context context = this;
@@ -59,17 +112,24 @@ public class Levels extends FragmentActivity {
 
     }*/
     public void createTables(){
-        ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipper);
+
+
+
+
+       // Button testBut = (Button) findViewById(R.id.level2);
+
 
         for(int j = 0; j<worlds; j++){
             TableLayout table = new TableLayout(this);
-            TableLayout.LayoutParams tb = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
-
+            ViewFlipper.LayoutParams tb = new ViewFlipper.LayoutParams(ViewFlipper.LayoutParams.WRAP_CONTENT, ViewFlipper.LayoutParams.WRAP_CONTENT);
+            tb.gravity = Gravity.CENTER;
+            final int worldNum = j;
 
             for(int i = 0; i<rows; i++){
                 TableRow row = new TableRow(this);
                 TableLayout.LayoutParams tl = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
                 tl.setMargins(dpToPix(buttonMarginsVert),dpToPix(buttonMarginsVert),dpToPix(buttonMarginsVert),dpToPix(buttonMarginsVert));
+
                 for(int x = 0; x<coloums; x++){
                     final int index = i*coloums+x;
 
@@ -96,6 +156,7 @@ public class Levels extends FragmentActivity {
                         public void onClick(View view) {
                             Intent intent = new Intent(view.getContext(), OpenGLES20Activity.class);
                             intent.putExtra("level", index);
+                            intent.putExtra("world", worldNum);
                             startActivity(intent);
                         }
                     });
@@ -105,7 +166,7 @@ public class Levels extends FragmentActivity {
                 }
                 table.addView(row,tl);
             }
-            flipper.addView(table,tb);
+            viewFlipper.addView(table,tb);
         }
     }
     public int dpToPix(int dps){

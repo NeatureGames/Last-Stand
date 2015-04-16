@@ -40,6 +40,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     //private Map mMap = new Map(0);
 
     public Obstacle background;
+    public Obstacle trophy;
 
     ArrayList<Obstacle> ground = new ArrayList<>();
     ArrayList<Obstacle> trampoline = new ArrayList<>();
@@ -47,15 +48,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
     int mapNum = 0;
+    int worldNum = 0;
+    int coinAmount = 0;
+
+    boolean completed = false;
 
 
-
-    float[][][][] levels =
-    {
-
-            {{{0f,-17.5f},{2f,-17.5f},{3f,-17.5f},{4f,-17.5f},{6f,-17.5f},{7f,-17.5f},{8f,-17.5f},{9f,-17.5f},{10f,-17.5f},{12f,-17.5f},{13f,-17.5f},{14f,-17.5f},{15f,-17.5f},{17f,-17.5f},{19f,-17.5f},{19f,-17.5f},{24f,-17.5f},{24f,-17.5f},{27f,-17.5f},{26f,-17.5f},{20f,-17.5f},{21f,-17.5f},{22f,-17.5f},{23f,-17.5f},{28f,-17.5f},},{},{{3f,-14.5f},{7f,-14.5f},{10f,-14.5f},{13f,-14.5f},{22f,-14f},{27f,-14.5f}}},
-            {{{0f,-17.5f},{1f,-17.5f},{2f,-17.5f},{4f,-17.5f},{5f,-17.5f},{6f,-17.5f},{7f,-17.5f},{9f,-17.5f}},{},{}},
-
+    float[][][][][] levels =
+    {//World
+            {//levels
+                    {{{0f, -17.5f}, {2f, -17.5f}, {3f, -17.5f}, {4f, -17.5f}, {6f, -17.5f}, {7f, -17.5f}, {8f, -17.5f}, {9f, -17.5f}, {10f, -17.5f}, {12f, -17.5f}, {13f, -17.5f}, {14f, -17.5f}, {15f, -17.5f}, {17f, -17.5f}, {19f, -17.5f}, {19f, -17.5f}, {24f, -17.5f}, {24f, -17.5f}, {27f, -17.5f}, {26f, -17.5f}, {20f, -17.5f}, {21f, -17.5f}, {22f, -17.5f}, {23f, -17.5f}, {28f, -17.5f},}, {}, {{3f, -14.5f}, {7f, -14.5f}, {10f, -14.5f}, {13f, -14.5f}, {22f, -14f}, {27f, -14.5f}}},
+                    {{{0f, -17.5f}, {1f, -17.5f}, {2f, -17.5f}, {4f, -17.5f}, {5f, -17.5f}, {6f, -17.5f}, {7f, -17.5f}, {9f, -17.5f}}, {}, {}},
+            },
+            {//levels
+                    {{{0f, -17.5f}, {1f, -17.5f},{4f, -17.5f}, {5f, -17.5f},  {7f, -17.5f}, {9f, -17.5f}}, {{2f, -17.5f},{6f, -17.5f},}, {}},
+            },
 
             /*{
                     {{3.5f,-17.5f},{2.5f,-17.5f},{0.5f,-17.5f},{4.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},},{},{{3.5f,-14.5f},{7.5f,-14.5f},{10.5f,-14.5f},{14.5f,-14.5f}}
@@ -77,7 +84,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                     }
             }*/
     };
-     /*levels  /*level  /*obstacles  /*x,y*/
+    /* world /*levels  /*level  /*obstacles  /*x,y*/
 
 
 
@@ -101,18 +108,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private float frames = 0;
     public float fps = 60;
 
-    public IntBuffer m_viewport;
-
-    public MyGLRenderer(Context context, int level){
+    public MyGLRenderer(Context context,int world, int level){
         mActivityContext = context;
 
+        Log.d("World", "accessed world: " + world);
         Log.d("Level", "loaded level: " + level);
-        if(level < levels.length ){
-            mapNum = level;
+        if(world <levels.length) {
+            worldNum = world;
+            if (level < levels[worldNum].length) {
+                mapNum = level;
+            } else {
+                mapNum = 0;
+                Log.d("Level", "level error: Level " + level + " does not exist");
+            }
         }
         else{
+            Log.d("World", "world error: World " + world + " does not exist");
             mapNum = 0;
-            Log.d("Level", "level error: Level " + level + " does not exist");
+            worldNum = 0;
         }
     }
     @Override
@@ -123,14 +136,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mPlayer   = new Player(this);
 
 
-        for(int i = 0; i < levels[mapNum][0].length; i++){
-            ground.add(new Obstacle(levels[mapNum][0][i][0], levels[mapNum][0][i][1], 1, 5, "ground", this));
+        for(int i = 0; i < levels[worldNum][mapNum][0].length; i++){
+            ground.add(new Obstacle(levels[worldNum][mapNum][0][i][0], levels[worldNum][mapNum][0][i][1], 1, 5, "ground", this));
         }
-        for(int i = 0; i < levels[mapNum][1].length; i++){
-            trampoline.add(new Obstacle(levels[mapNum][1][i][0],levels[mapNum][1][i][1], 1, 5, "tramp", this));
+        for(int i = 0; i < levels[worldNum][mapNum][1].length; i++){
+            trampoline.add(new Obstacle(levels[worldNum][mapNum][1][i][0],levels[worldNum][mapNum][1][i][1], 1, 5, "tramp", this));
         }
-        for(int i = 0; i < levels[mapNum][2].length; i++){
-            coins.add(new Obstacle(levels[mapNum][2][i][0],levels[mapNum][2][i][1], .25f, .25f, "coin", this));
+        for(int i = 0; i < levels[worldNum][mapNum][2].length; i++){
+            coins.add(new Obstacle(levels[worldNum][mapNum][2][i][0],levels[worldNum][mapNum][2][i][1], .25f, .25f, "coin", this));
         }
         //background = new Obstacle(0,0,-cameraDist*ratio*2,-cameraDist*2,"background",this);
     }
@@ -218,6 +231,20 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
             // Draw square
             coins.get(i).draw(scratch);
+        }
+        for(int i = 0; i < trampoline.size(); i++) {
+            Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+            Matrix.translateM(mModelMatrix, 0, -trampoline.get(i).x, trampoline.get(i).y, 0); // translation to the player position
+
+            Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+            mTempMatrix = mModelMatrix.clone();
+            Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
+
+            mTempMatrix = mMVPMatrix.clone();
+            Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+            // Draw square
+            trampoline.get(i).draw(scratch);
         }
 
         //fps stuff

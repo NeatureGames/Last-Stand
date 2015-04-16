@@ -17,10 +17,12 @@ public class OpenGLES20Activity extends Activity {
 
         Intent intent = getIntent();
         int levelnum = intent.getExtras().getInt("level");
+        int worldnum = intent.getExtras().getInt("world");
+        Log.d("World", "accessing world: " + worldnum);
         Log.d("Level", "loading level: " + levelnum);
         // Create a GLSurfaceView instance and set it
         // as the ContentView for this Activity
-        mGLView = new MyGLSurfaceView(this, levelnum);
+        mGLView = new MyGLSurfaceView(this,worldnum, levelnum);
         setContentView(mGLView);
     }
 
