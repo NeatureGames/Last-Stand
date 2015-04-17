@@ -45,6 +45,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     ArrayList<Obstacle> ground = new ArrayList<>();
     ArrayList<Obstacle> trampoline = new ArrayList<>();
     ArrayList<Obstacle> coins = new ArrayList<>();
+    ArrayList<Obstacle> BABlocks = new ArrayList<>();
 
 
     int mapNum = 0;
@@ -57,11 +58,27 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     float[][][][][] levels =
     {//World
             {//levels
-                    {{{0f, -17.5f}, {2f, -17.5f}, {3f, -17.5f}, {4f, -17.5f}, {6f, -17.5f}, {7f, -17.5f}, {8f, -17.5f}, {9f, -17.5f}, {10f, -17.5f}, {12f, -17.5f}, {13f, -17.5f}, {14f, -17.5f}, {15f, -17.5f}, {17f, -17.5f}, {19f, -17.5f}, {19f, -17.5f}, {24f, -17.5f}, {24f, -17.5f}, {27f, -17.5f}, {26f, -17.5f}, {20f, -17.5f}, {21f, -17.5f}, {22f, -17.5f}, {23f, -17.5f}, {28f, -17.5f},}, {}, {{3f, -14.5f}, {7f, -14.5f}, {10f, -14.5f}, {13f, -14.5f}, {22f, -14f}, {27f, -14.5f}}},
-                    {{{0f, -17.5f}, {1f, -17.5f}, {2f, -17.5f}, {4f, -17.5f}, {5f, -17.5f}, {6f, -17.5f}, {7f, -17.5f}, {9f, -17.5f}}, {}, {}},
+                    {{{2.5f,-17.5f},{1.5f,-17.5f},{0.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},},{},{},{},{{13.5f,-14.5f}},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{},{},{},{{17.5f,-14.5f}},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{19.5f,-17.5f},{21.5f,-17.5f},},{},{},{},{{21.5f,-14.5f}},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},},{},{{15.5f,-14.5f},{1.5f,-14.5f},{11.5f,-14.5f},},{},{{16.5f,-14.5f}},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},},{},{{1.5f,-14.5f},{9.5f,-14.5f},{12.5f,-14.5f},{17.5f,-14.5f},},{},{{20.5f,-14.5f}},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},{21.5f,-17.5f},{22.5f,-17.5f},{23.5f,-17.5f},},{},{{18.5f,-14.5f},{12.5f,-14.5f},{13.5f,-14.5f},{7.5f,-14.5f},{3.5f,-14.5f}},{},{{23.5f,-14.5f},},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{19.5f,-17.5f},{20.5f,-17.5f},{21.5f,-17.5f},{23.5f,-17.5f},},{},{{20.5f,-14.5f},{14.5f,-14.5f},{12.5f,-14.5f},{6.5f,-14.5f},{3.5f,-14.5f},{2.5f,-14.5f}},{},{{23.5f,-14.5f},},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{{3.5f,-17.5f},},{{14.5f,-14.5f},{12.5f,-14.5f},{5.5f,-14.5f},{1.5f,-14.5f}},{},{{17.5f,-14.5f},},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{11.5f,-17.5f},},{{4.5f,-17.5f},{8.5f,-17.5f},},{{5.5f,-14.5f},{1.5f,-14.5f},},{},{{11.5f,-14.5f}},},
+
             },
             {//levels
-                    {{{0f, -17.5f}, {1f, -17.5f},{4f, -17.5f}, {5f, -17.5f},  {7f, -17.5f}, {9f, -17.5f}}, {{2f, -17.5f},{6f, -17.5f},}, {}},
+                    {{{2.5f,-17.5f},{3.5f,-17.5f},},{},{{1.5f,-14.5f},},{{0.5f,-17.5f},{1.5f,-17.5f},},{{3.5f,-14.5f}},},
             },
 
             /*{
@@ -133,6 +150,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glClearColor(0.5f, 0.3f, 0.2f, 1.0f);
 
+        loadMap();
+        //background = new Obstacle(0,0,-cameraDist*ratio*2,-cameraDist*2,"background",this);
+    }
+    public void loadMap(){
+        ground.clear();
+        trampoline.clear();
+        coins.clear();
+        BABlocks.clear();
+
         mPlayer   = new Player(this);
 
 
@@ -145,13 +171,28 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         for(int i = 0; i < levels[worldNum][mapNum][2].length; i++){
             coins.add(new Obstacle(levels[worldNum][mapNum][2][i][0],levels[worldNum][mapNum][2][i][1], .25f, .25f, "coin", this));
         }
-        //background = new Obstacle(0,0,-cameraDist*ratio*2,-cameraDist*2,"background",this);
+        for(int i = 0; i < levels[worldNum][mapNum][3].length; i++){
+            BABlocks.add(new Obstacle(levels[worldNum][mapNum][3][i][0],levels[worldNum][mapNum][3][i][1], 1, 5, "BABlock", this));
+        }
+        trophy = new Obstacle(levels[worldNum][mapNum][4][0][0],levels[worldNum][mapNum][4][0][1], .5f, .5f, "trophy", this);
     }
+    public void endGame(){
+        if(!completed) {
 
+            if (coins.size() == 0) {
+                completed = true;
+                Log.d("End Game", "Yay! ...and there was much rejoicing...");
+            } else {
+                Log.d("End Game", "not enough coins");
+            }
+        }
+    }
     @Override
     public void onDrawFrame(GL10 unused) {
         //update all objects
         mPlayer.update();
+
+
 
 
 
@@ -203,6 +244,22 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
         // Draw square
         mPlayer.draw(scratch);
+
+        /** Draw Trophy **/
+        //mModelMatrix = mBaseMatrix.clone();
+        Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+        Matrix.translateM(mModelMatrix, 0, -trophy.x, trophy.y, 0); // translation to the player position
+
+        Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+        mTempMatrix = mModelMatrix.clone();
+        Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
+
+        mTempMatrix = mMVPMatrix.clone();
+        Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+        // Draw square
+        trophy.draw(scratch);
+
        // Log.d("Player", "posy: " + mPlayer.posY);
         for(int i = 0; i < ground.size(); i++) {
             Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
@@ -245,6 +302,27 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
             // Draw square
             trampoline.get(i).draw(scratch);
+        }
+        for(int i = 0; i < BABlocks.size(); i++) {
+            if(!BABlocks.get(i).deleted) {
+                BABlocks.get(i).update();
+
+                Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+                Matrix.translateM(mModelMatrix, 0, -BABlocks.get(i).x, BABlocks.get(i).y, 0); // translation to the player position
+
+                Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+                mTempMatrix = mModelMatrix.clone();
+                Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
+
+                mTempMatrix = mMVPMatrix.clone();
+                Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+                // Draw square
+                BABlocks.get(i).draw(scratch);
+            }
+            else {
+                BABlocks.remove(i);
+            }
         }
 
         //fps stuff

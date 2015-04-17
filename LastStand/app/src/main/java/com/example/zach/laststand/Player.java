@@ -63,7 +63,7 @@ public class Player {
     //player controls
     public static float width = .8f;
     public static float height = .8f;
-    public float posX = 0;
+    public float posX = 0.5f;
     public float posY = -14;
     public float mAngle;
 
@@ -118,6 +118,8 @@ public class Player {
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
+    private Obstacle currentPlatform;
+
     public Player(MyGLRenderer parent) {
         game = parent;
 
@@ -254,12 +256,9 @@ public class Player {
 
         handleCollision();
 
-        //Simple Respawn
+        // Respawn
         if(posY < game.cameraCenter+game.cameraDist-height){
-            posY = game.cameraCenter;
-            posX = 0;
-            velX = 0;
-            velY = 0;
+            game.loadMap();
         }
         if(!grounded){
             int multFac = (velX<0)?1:-1;
@@ -278,6 +277,11 @@ public class Player {
     public void jump(String direction) {
         if(grounded) {
            // velY = .1f;
+            if(currentPlatform != null) {
+                if (currentPlatform.type == "BABlock") {
+                    currentPlatform.falling = true;
+                }
+            }
             grounded = false;
 
            // mAngle
@@ -363,16 +367,32 @@ public class Player {
             if(dir == "t"){
                 posY = game.ground.get(i).y + game.ground.get(i).height / 2 + height / 2;
                 posX = game.ground.get(i).x;
+                currentPlatform = game.ground.get(i);
                 grounded = true;
                 //jumping = false;
                // Log.d("collisions", "dir: HIT");
             }
         }
+        for(int i = 0; i<game.BABlocks.size(); i++){
+            String dir = checkCollision(game.BABlocks.get(i));
+
+            if(dir == "t"){
+                posY = game.BABlocks.get(i).y + game.BABlocks.get(i).height / 2 + height / 2;
+                posX = game.BABlocks.get(i).x;
+                currentPlatform = game.BABlocks.get(i);
+                grounded = true;
+                //jumping = false;
+                // Log.d("collisions", "dir: HIT");
+            }
+
+
+        }
         for(int i = 0; i<game.coins.size(); i++){
             String dir = checkCollision(game.coins.get(i));
 
             if(dir != ""){
-                game.coinAmount = i+1;
+                game.coinAmount++;
+                game.coins.remove(i);
             }
         }
         for(int i = 0; i<game.trampoline.size(); i++){
@@ -383,6 +403,7 @@ public class Player {
                 posX = game.trampoline.get(i).x;
                 grounded = true;
 
+
                 if(velX > 0){
                     jump("TR");
                 }
@@ -391,6 +412,13 @@ public class Player {
                 }
 
             }
+        }
+
+        //Check trophy collision
+        String trophyDir = checkCollision(game.trophy);
+
+        if(trophyDir != ""){
+            game.endGame();
         }
     }
 

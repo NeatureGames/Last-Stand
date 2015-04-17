@@ -74,12 +74,19 @@ public class Obstacle {
     float width;
     float height ;
 
+    public String type;
+    public boolean falling = false;
+    public float fallFactor = .1f;
+    public boolean deleted = false;
+
+
     public Obstacle(float x, float y, float w, float h, String type,MyGLRenderer parent) {
         this.x = x;
         this.y = y;
         this.width = w;
         this.height = h;
         this.game = parent;
+        this.type= type;
         //this.color = color;
 
         squareCoords = new float[]{
@@ -143,6 +150,12 @@ public class Obstacle {
         }
         else if(type=="coin"){
             mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.testcoin);
+        }
+        else if(type=="tramp"){
+            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.tramppillar);
+        }
+        else if(type=="ground"){
+            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.grasspillar);
         }
         else{
             mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.ic_launcher);
@@ -214,5 +227,17 @@ public class Obstacle {
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+    }
+
+    public void update(){
+        if(this.type == "BABlock"){
+            if(this.falling){
+                this.y-=fallFactor;
+            }
+            if(this.y <  game.cameraCenter+game.cameraDist-height) {
+                this.falling = false;
+                this.deleted = true;
+            }
+        }
     }
 }
