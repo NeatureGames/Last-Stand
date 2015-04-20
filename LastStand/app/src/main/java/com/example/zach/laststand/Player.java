@@ -61,8 +61,8 @@ public class Player {
 
     private MyGLRenderer game;
     //player controls
-    public static float width = .8f;
-    public static float height = .8f;
+    public static float width = .6f;
+    public static float height = .6f;
     public float posX = 0.5f;
     public float posY = -14;
     public float mAngle;
@@ -120,7 +120,7 @@ public class Player {
      */
     private Obstacle currentPlatform;
 
-    public Player(MyGLRenderer parent) {
+    public Player(int texture, MyGLRenderer parent) {
         game = parent;
 
 
@@ -174,7 +174,7 @@ public class Player {
         GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment shader to program
         GLES20.glLinkProgram(mProgram);                  // create OpenGL program executables
 
-        mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.ic_launcher);
+        mTextureDataHandle = texture;
     }
 
     /**
@@ -274,7 +274,7 @@ public class Player {
         posX += velX;
         posY += velY;
     }
-    public void jump(String direction) {
+    public void jump(int distance) {
         if(grounded) {
            // velY = .1f;
             if(currentPlatform != null) {
@@ -284,37 +284,11 @@ public class Player {
             }
             grounded = false;
 
-           // mAngle
-            if (direction == "R") {
-               // velX = .2f;
-                velY = (float) Math.sqrt(-2*game.gravity*jumpHeight*2);
+            velY = (float) Math.sqrt(-2*game.gravity*jumpHeight*Math.abs(distance));
 
-                jumpTime= 2*velY/game.gravity;
+            jumpTime= 2*velY/game.gravity;
 
-                velX = -(jumpWidth*2)/jumpTime;
-            }
-            else if(direction == "TR"){
-                velY = (float) Math.sqrt(-2*game.gravity*jumpHeight*3);
-
-                jumpTime= 2*velY/game.gravity;
-
-                velX = -(jumpWidth*3)/jumpTime;
-            }
-            else if(direction == "TL"){
-                velY = (float) Math.sqrt(-2*game.gravity*jumpHeight*3);
-
-                jumpTime= 2*velY/game.gravity;
-
-                velX = (jumpWidth*3)/jumpTime;
-            }
-            else {
-               // velX = -.1f;
-                velY = (float) Math.sqrt(-2*game.gravity*jumpHeight);
-
-                jumpTime= 2*velY/game.gravity;
-
-                velX = jumpWidth/jumpTime;
-            }
+            velX = -(jumpWidth*distance)/jumpTime;
         }
     }
     private String checkCollision(Obstacle obj){
@@ -405,10 +379,28 @@ public class Player {
 
 
                 if(velX > 0){
-                    jump("TR");
+                    jump(3);
                 }
                 else{
-                    jump("TL");
+                    jump(-3);
+                }
+
+            }
+        }
+        for(int i = 0; i<game.supaTramp.size(); i++){
+            String dir = checkCollision(game.supaTramp.get(i));
+
+            if(dir == "t"){
+                posY = game.supaTramp.get(i).y + game.supaTramp.get(i).height / 2 + height / 2;
+                posX = game.supaTramp.get(i).x;
+                grounded = true;
+
+
+                if(velX > 0){
+                    jump(5);
+                }
+                else{
+                    jump(-5);
                 }
 
             }

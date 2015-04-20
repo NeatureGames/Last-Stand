@@ -58,14 +58,19 @@ public class MyGLSurfaceView extends GLSurfaceView {
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
 
+                if(mRenderer.firstSwip){
+                    mRenderer.startTimeL = System.currentTimeMillis();
+                    mRenderer.firstSwip = false;
+                }
+
                 float dx = x - mPreviousX;
                 //float dy = y - mPreviousY;
 
                 if (dx > 0){    //swipe right
-                    mRenderer.mPlayer.jump("R");
+                    mRenderer.mPlayer.jump(2);
                 }
                 else{
-                    mRenderer.mPlayer.jump("L");
+                    mRenderer.mPlayer.jump(-1);
                 }
                /* // reverse direction of rotation above the mid-line
                 if (y > getHeight() / 2) {

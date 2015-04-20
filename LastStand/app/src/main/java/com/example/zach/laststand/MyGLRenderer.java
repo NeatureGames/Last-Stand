@@ -14,6 +14,10 @@ import android.opengl.Matrix;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.app.Activity;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Map;
@@ -33,6 +37,18 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     protected final Context mActivityContext;
 
+    public int backgroundTex;
+    public int coinTex;
+    public int stoneTex;
+    public int grassTex;
+    public int trampTex;
+    public int supaTrampTex;
+    public int defaultTex;
+    public int playerTex;
+    public int goldtrophyTex;
+    public int silvertrophyTex;
+    public int bronzetrophyTex;
+
 
     //private Map mTriangle;
     public Player   mPlayer;
@@ -46,11 +62,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     ArrayList<Obstacle> trampoline = new ArrayList<>();
     ArrayList<Obstacle> coins = new ArrayList<>();
     ArrayList<Obstacle> BABlocks = new ArrayList<>();
+    ArrayList<Obstacle> supaTramp = new ArrayList<>();
 
 
     int mapNum = 0;
     int worldNum = 0;
     int coinAmount = 0;
+
+    long startTimeL;
+    boolean firstSwip = true;
 
     boolean completed = false;
 
@@ -58,27 +78,43 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     float[][][][][] levels =
     {//World
             {//levels
-                    {{{2.5f,-17.5f},{1.5f,-17.5f},{0.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},},{},{},{},{{13.5f,-14.5f}},},
+                    {{{2.5f,-17.5f},{1.5f,-17.5f},{0.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},},{},{},{},{{13.5f,-14.5f}},{},},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{},{},{},{{17.5f,-14.5f}},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{},{},{},{{17.5f,-14.5f}},{},},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{19.5f,-17.5f},{21.5f,-17.5f},},{},{},{},{{21.5f,-14.5f}},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{19.5f,-17.5f},{21.5f,-17.5f},},{},{},{},{{21.5f,-14.5f}},{},},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},},{},{{15.5f,-14.5f},{1.5f,-14.5f},{11.5f,-14.5f},},{},{{16.5f,-14.5f}},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},},{},{{15.5f,-14.5f},{1.5f,-14.5f},{11.5f,-14.5f},},{},{{16.5f,-14.5f}},{},},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},},{},{{1.5f,-14.5f},{9.5f,-14.5f},{12.5f,-14.5f},{17.5f,-14.5f},},{},{{20.5f,-14.5f}},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},},{},{{1.5f,-14.5f},{9.5f,-14.5f},{12.5f,-14.5f},{17.5f,-14.5f},},{},{{20.5f,-14.5f}},{},},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},{21.5f,-17.5f},{22.5f,-17.5f},{23.5f,-17.5f},},{},{{18.5f,-14.5f},{12.5f,-14.5f},{13.5f,-14.5f},{7.5f,-14.5f},{3.5f,-14.5f}},{},{{23.5f,-14.5f},},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},{21.5f,-17.5f},{22.5f,-17.5f},{23.5f,-17.5f},},{},{{18.5f,-14.5f},{12.5f,-14.5f},{13.5f,-14.5f},{7.5f,-14.5f},{3.5f,-14.5f}},{},{{23.5f,-14.5f},},{},},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{19.5f,-17.5f},{20.5f,-17.5f},{21.5f,-17.5f},{23.5f,-17.5f},},{},{{20.5f,-14.5f},{14.5f,-14.5f},{12.5f,-14.5f},{6.5f,-14.5f},{3.5f,-14.5f},{2.5f,-14.5f}},{},{{23.5f,-14.5f},},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{19.5f,-17.5f},{20.5f,-17.5f},{21.5f,-17.5f},{23.5f,-17.5f},},{},{{20.5f,-14.5f},{14.5f,-14.5f},{12.5f,-14.5f},{6.5f,-14.5f},{3.5f,-14.5f},{2.5f,-14.5f}},{},{{23.5f,-14.5f},},{},},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{{3.5f,-17.5f},},{{14.5f,-14.5f},{12.5f,-14.5f},{5.5f,-14.5f},{1.5f,-14.5f}},{},{{17.5f,-14.5f},},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{{3.5f,-17.5f},},{{14.5f,-14.5f},{12.5f,-14.5f},{5.5f,-14.5f},{1.5f,-14.5f}},{},{{17.5f,-14.5f},},{},},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{11.5f,-17.5f},},{{4.5f,-17.5f},{8.5f,-17.5f},},{{5.5f,-14.5f},{1.5f,-14.5f},},{},{{11.5f,-14.5f}},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{11.5f,-17.5f},},{{4.5f,-17.5f},{8.5f,-17.5f},},{{5.5f,-14.5f},{1.5f,-14.5f},},{},{{11.5f,-14.5f}},{},},
 
             },
             {//levels
-                    {{{2.5f,-17.5f},{3.5f,-17.5f},},{},{{1.5f,-14.5f},},{{0.5f,-17.5f},{1.5f,-17.5f},},{{3.5f,-14.5f}},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{20.5f,-17.5f},},{{2.5f,-17.5f},{4.5f,-17.5f},{17.5f,-17.5f},},{{11.5f,-14.5f},{16.5f,-14.5f},{6.5f,-14.5f},{1.5f,-14.5f}},{},{{20.5f,-14.5f},},{},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{18.5f,-17.5f},},{{2.5f,-17.5f},{6.5f,-17.5f},{15.5f,-17.5f},},{{6.5f,-14.5f},{8.5f,-14.5f},{12.5f,-14.5f}},{},{{18.5f,-14.5f},},{},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{{4.5f,-17.5f},{8.5f,-17.5f},{12.5f,-17.5f},{16.5f,-17.5f},},{{15.5f,-14.5f},{8.5f,-14.5f},{9.5f,-14.5f},{1.5f,-14.5f}},{},{{13.5f,-14.5f},},{},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{18.5f,-17.5f},},{},{{9.5f,-14.5f},{13.6f,-14.5f},{15.5f,-14.5f},},{},{{18.5f,-14.5f}},{{3.5f,-17.5f},},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{19.5f,-17.5f},{21.5f,-17.5f},},{{14.5f,-17.5f},{18.5f,-17.5f},},{{15.5f,-14.5f},{4.5f,-14.5f},{10.5f,-14.5f},},{},{{21.5f,-14.5f}},{{2.5f,-17.5f},{8.5f,-17.5f},},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},},{{4.5f,-17.5f},{9.5f,-17.5f},},{{1.5f,-14.5f}},{},{{14.5f,-14.5f},},{{2.5f,-17.5f},{7.5f,-17.5f},},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{15.5f,-17.5f},},{{4.5f,-17.5f},},{{7.5f,-14.5f},{1.5f,-14.5f}},{},{{15.5f,-14.5f},},{{5.5f,-17.5f},{10.5f,-17.5f},},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{19.5f,-17.5f},},{{4.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},},{{11.5f,-14.5f},{5.5f,-14.5f},{1.5f,-14.5f}},{},{{19.5f,-14.5f},},{{14.5f,-17.5f},{16.5f,-17.5f},},},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{6.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{15.5f,-17.5f},},{{2.5f,-17.5f},{4.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},},{{6.5f,-14.5f},{1.5f,-14.5f}},{},{{15.5f,-14.5f},},{{5.5f,-17.5f},{12.5f,-17.5f},},},
             },
 
             /*{
@@ -125,8 +161,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private float frames = 0;
     public float fps = 60;
 
+    public double getTime(){
+        //Log.d("Level", "level error: Level " + (System.currentTimeMillis() - startTimeL) + " does not exist");
+        return  (double)(System.currentTimeMillis() - startTimeL)/1000;
+
+    }
     public MyGLRenderer(Context context,int world, int level){
         mActivityContext = context;
+
+
 
         Log.d("World", "accessed world: " + world);
         Log.d("Level", "loaded level: " + level);
@@ -149,7 +192,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 
         GLES20.glClearColor(0.5f, 0.3f, 0.2f, 1.0f);
-
+        backgroundTex  = loadTexture(mActivityContext, R.drawable.test);
+        coinTex = loadTexture(mActivityContext, R.drawable.testcoin);
+        trampTex = loadTexture(mActivityContext, R.drawable.tramppillar);
+        supaTrampTex = loadTexture(mActivityContext, R.drawable.supertram);
+        grassTex = loadTexture(mActivityContext, R.drawable.grasspillar);
+        stoneTex = loadTexture(mActivityContext, R.drawable.stonepillars);
+        defaultTex = loadTexture(mActivityContext, R.drawable.ic_launcher);
+        playerTex = loadTexture(mActivityContext, R.drawable.characterred);
+        goldtrophyTex = loadTexture(mActivityContext, R.drawable.goldtrophy);
+        silvertrophyTex = loadTexture(mActivityContext, R.drawable.silvertrophy);
+        bronzetrophyTex = loadTexture(mActivityContext, R.drawable.bronzetrophy);
         loadMap();
         //background = new Obstacle(0,0,-cameraDist*ratio*2,-cameraDist*2,"background",this);
     }
@@ -159,29 +212,43 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         coins.clear();
         BABlocks.clear();
 
-        mPlayer   = new Player(this);
+        firstSwip = true;
+
+        mPlayer   = new Player(playerTex, this);
 
 
         for(int i = 0; i < levels[worldNum][mapNum][0].length; i++){
-            ground.add(new Obstacle(levels[worldNum][mapNum][0][i][0], levels[worldNum][mapNum][0][i][1], 1, 5, "ground", this));
+            ground.add(new Obstacle(levels[worldNum][mapNum][0][i][0], levels[worldNum][mapNum][0][i][1], 1, 5, "ground",grassTex ,this));
         }
         for(int i = 0; i < levels[worldNum][mapNum][1].length; i++){
-            trampoline.add(new Obstacle(levels[worldNum][mapNum][1][i][0],levels[worldNum][mapNum][1][i][1], 1, 5, "tramp", this));
+            trampoline.add(new Obstacle(levels[worldNum][mapNum][1][i][0],levels[worldNum][mapNum][1][i][1], 1, 5, "tramp",trampTex , this));
         }
         for(int i = 0; i < levels[worldNum][mapNum][2].length; i++){
-            coins.add(new Obstacle(levels[worldNum][mapNum][2][i][0],levels[worldNum][mapNum][2][i][1], .25f, .25f, "coin", this));
+            coins.add(new Obstacle(levels[worldNum][mapNum][2][i][0],levels[worldNum][mapNum][2][i][1], .4f, .4f, "coin",coinTex , this));
         }
         for(int i = 0; i < levels[worldNum][mapNum][3].length; i++){
-            BABlocks.add(new Obstacle(levels[worldNum][mapNum][3][i][0],levels[worldNum][mapNum][3][i][1], 1, 5, "BABlock", this));
+            BABlocks.add(new Obstacle(levels[worldNum][mapNum][3][i][0],levels[worldNum][mapNum][3][i][1], 1, 5, "BABlock",stoneTex , this));
         }
-        trophy = new Obstacle(levels[worldNum][mapNum][4][0][0],levels[worldNum][mapNum][4][0][1], .5f, .5f, "trophy", this);
+        trophy = new Obstacle(levels[worldNum][mapNum][4][0][0],levels[worldNum][mapNum][4][0][1], .5f, .5f, "trophy",goldtrophyTex , this);
+
+        for(int i = 0; i < levels[worldNum][mapNum][5].length; i++){
+            supaTramp.add(new Obstacle(levels[worldNum][mapNum][5][i][0],levels[worldNum][mapNum][5][i][1], 1, 5, "supaTramp",supaTrampTex , this));
+        }
     }
     public void endGame(){
         if(!completed) {
 
             if (coins.size() == 0) {
                 completed = true;
-                Log.d("End Game", "Yay! ...and there was much rejoicing...");
+                Log.d("End Game", "Yay! ...and there was much rejoicing..." + getTime());
+
+                ((OpenGLES20Activity)mActivityContext).run();
+               // RelativeLayout dankness = (RelativeLayout)((Activity)mActivityContext).getWindow().getDecorView().findViewById(R.id.dankEndScreen);
+                //FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT);
+
+                //params.rightMargin =0;
+                //dankness.setLayoutParams(params);
+                //viewFlipper = (RelativeLayout) mActivityContext.findViewById(R.id.dankEndScreen);
             } else {
                 Log.d("End Game", "not enough coins");
             }
@@ -303,6 +370,20 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             // Draw square
             trampoline.get(i).draw(scratch);
         }
+        for(int i = 0; i < supaTramp.size(); i++) {
+            Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+            Matrix.translateM(mModelMatrix, 0, -supaTramp.get(i).x, supaTramp.get(i).y, 0); // translation to the player position
+
+            Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+            mTempMatrix = mModelMatrix.clone();
+            Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
+
+            mTempMatrix = mMVPMatrix.clone();
+            Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+            // Draw square
+            supaTramp.get(i).draw(scratch);
+        }
         for(int i = 0; i < BABlocks.size(); i++) {
             if(!BABlocks.get(i).deleted) {
                 BABlocks.get(i).update();
@@ -347,7 +428,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
         //Create background here because now we have ratio
-        background = new Obstacle(0,0,-cameraDist*2,-cameraDist*2,"background",this);
+        background = new Obstacle(0,0,-cameraDist*2,-cameraDist*2,"background",backgroundTex,this);
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method

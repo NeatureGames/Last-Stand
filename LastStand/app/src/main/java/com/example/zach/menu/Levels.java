@@ -3,6 +3,8 @@ package com.example.zach.menu;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -28,9 +30,10 @@ public class Levels extends FragmentActivity {
     private int worlds = 2;
     private int buttonMarginsHoriz = 10;
     private int buttonMarginsVert = 15;
-    private int buttonPadding = 0;
-    private int buttonWidth = 50;
-    private int buttonHeight = 50;
+    private int buttonPaddingTop = 10;
+    private int buttonPaddingRight = 21;
+    private int buttonWidth = 70;
+    private int buttonHeight = 90;
     private ViewFlipper viewFlipper;
     private float lastX;
     //Button button;
@@ -39,6 +42,7 @@ public class Levels extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.levels);
+
         viewFlipper = (ViewFlipper) findViewById(R.id.flipDatView);
 
         createTables();
@@ -113,16 +117,17 @@ public class Levels extends FragmentActivity {
     }*/
     public void createTables(){
 
+        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/manteka.ttf");
 
 
-
-       // Button testBut = (Button) findViewById(R.id.level2);
+        // Button testBut = (Button) findViewById(R.id.level2);
 
 
         for(int j = 0; j<worlds; j++){
             TableLayout table = new TableLayout(this);
             ViewFlipper.LayoutParams tb = new ViewFlipper.LayoutParams(ViewFlipper.LayoutParams.WRAP_CONTENT, ViewFlipper.LayoutParams.WRAP_CONTENT);
             tb.gravity = Gravity.CENTER;
+
             final int worldNum = j;
 
             for(int i = 0; i<rows; i++){
@@ -133,20 +138,23 @@ public class Levels extends FragmentActivity {
                 for(int x = 0; x<coloums; x++){
                     final int index = i*coloums+x;
 
-                    TableRow.LayoutParams tr = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+                    TableRow.LayoutParams tr = new TableRow.LayoutParams(dpToPix(buttonWidth), dpToPix(buttonHeight));
                     tr.gravity = Gravity.CENTER;
                     tr.setMargins(dpToPix(buttonMarginsHoriz),dpToPix(buttonMarginsHoriz),dpToPix(buttonMarginsHoriz),dpToPix(buttonMarginsHoriz));
 
 
                     Button button = new Button(this);
 
+
                     //Drawable buttonImage = getResources().getDrawable(R.drawable.ic_launcher);
 
-                    button.setBackgroundResource(R.drawable.ic_launcher);
+                    button.setBackgroundResource(R.drawable.levelbanner);
                     button.setText(Integer.toString(index + 1));
-                    button.setWidth(dpToPix(buttonWidth));
-                    button.setHeight(dpToPix(buttonHeight));
-                    button.setPadding( dpToPix(buttonPadding),dpToPix(buttonPadding),dpToPix(buttonPadding),dpToPix(buttonPadding));
+                    //button.setWidth(dpToPix(buttonWidth));
+                  //  button.setHeight(dpToPix(buttonHeight));
+                    button.setPadding( 0,dpToPix(buttonPaddingTop),dpToPix(buttonPaddingRight),0);
+                   // button.setP
+                   // button.setPa
                    // button.setM(dpToPix(buttonWidth));
                    // button.setWidth(dpToPix(buttonWidth));
                    // button.setLayoutGravity
@@ -160,7 +168,10 @@ public class Levels extends FragmentActivity {
                             startActivity(intent);
                         }
                     });
-
+                    button.setGravity(Gravity.TOP | Gravity.RIGHT);
+                    button.setTypeface(font);
+                    button.setTextColor(Color.parseColor("#FFFFFF"));
+                    button.setTextSize(22);
 
                     row.addView(button,tr);
                 }

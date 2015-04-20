@@ -20,6 +20,8 @@
                 android:layout_width="225dp"
                 android:layout_height="50dp"
                 android:layout_row="0"
+                android:textColor="#FFFFFF"
+                android:textSize = "20sp"
                 android:text="@string/level_name"
                 android:id="@+id/levels"
                 android:onClick="levels"
@@ -36,7 +38,8 @@
                 android:layout_row="0"
                 android:text="Endless"
                 android:id="@+id/endless"
-
+                android:textColor="#FFFFFF"
+                android:textSize = "20sp"
                 android:gravity="center"
                 android:layout_column="0"
                 android:background="@drawable/banner"/>
@@ -51,7 +54,8 @@
                 android:layout_row="0"
                 android:text="Buy Gold"
                 android:id="@+id/buygold"
-
+                android:textColor="#FFFFFF"
+                android:textSize = "20sp"
                 android:gravity="center"
                 android:layout_column="0"
                 android:background="@drawable/banner"/>
@@ -66,7 +70,8 @@
                 android:layout_row="0"
                 android:text="Character Select"
                 android:id="@+id/character"
-
+                android:textColor="#FFFFFF"
+                android:textSize = "20sp"
                 android:gravity="center"
                 android:layout_column="0"
                 android:background="@drawable/banner"/>

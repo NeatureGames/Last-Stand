@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/dankEndScreen"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center">
+            <TableLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/World1"
+
+                >
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:gravity="center"
+                    android:layout_height="match_parent">
+                    <RelativeLayout
+                        android:gravity="center">
+                        <ImageView
+                            android:layout_width="300dp"
+                            android:layout_height="200dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:text="9"
+                            android:width = "20dp"
+                            android:height = "20dp"
+                            android:gravity="center"
+                            android:background="@drawable/banner"
+                            android:textSize="30sp"
+                            android:paddingRight="18dp"
+                            android:paddingTop="10dp"
+                            android:id="@+id/level2"
+                            android:layout_column="0" >
+
+                            </ImageView>
+                        <TextView
+                            android:id="@+id/timeSlot"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="50dp"
+                            android:paddingRight="50dp"
+                            android:layout_alignTop="@+id/level2"
+                            android:layout_alignLeft="@+id/level2"
+                            android:layout_alignRight="@+id/level2"
+                            android:layout_alignBottom="@+id/level2"
+
+                            android:layout_marginTop="10dp"
+                            android:gravity="top|center_horizontal"
+                            android:text="Level Completed in 9.087 seconds!"
+                            android:textColor="#FFFFFF" />
+                    </RelativeLayout>
+                </TableRow>
+            </TableLayout>
+            <TableLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                >
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:gravity="center">
+
+                    <Button
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+
+                        android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/home"
+                        android:id="@+id/home"
+                        android:layout_column="0" />
+
+                    <Button
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/replay"
+                        android:id="@+id/replay"
+                        android:layout_column="1" />
+
+                    <Button
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/nextlevel"
+                        android:id="@+id/next"
+                        android:layout_column="2" />
+                </TableRow>
+
+
+            </TableLayout>
+        </LinearLayout>
+    </RelativeLayout>

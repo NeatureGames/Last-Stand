@@ -80,7 +80,7 @@ public class Obstacle {
     public boolean deleted = false;
 
 
-    public Obstacle(float x, float y, float w, float h, String type,MyGLRenderer parent) {
+    public Obstacle(float x, float y, float w, float h, String type,int texture,MyGLRenderer parent) {
         this.x = x;
         this.y = y;
         this.width = w;
@@ -145,21 +145,7 @@ public class Obstacle {
 
         //Load Specific texture
 
-        if(type == "background"){
-            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.test);
-        }
-        else if(type=="coin"){
-            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.testcoin);
-        }
-        else if(type=="tramp"){
-            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.tramppillar);
-        }
-        else if(type=="ground"){
-            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.grasspillar);
-        }
-        else{
-            mTextureDataHandle = game.loadTexture(game.mActivityContext, R.drawable.ic_launcher);
-        }
+        mTextureDataHandle= texture;
     }
 
     /**
