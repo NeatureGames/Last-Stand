@@ -64,57 +64,119 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     ArrayList<Obstacle> BABlocks = new ArrayList<>();
     ArrayList<Obstacle> supaTramp = new ArrayList<>();
 
+    ArrayList<Integer> EnlessModeLevels = new ArrayList<>();
+    ArrayList<Integer> EnlessModeWorlds = new ArrayList<>();
+
 
     int mapNum = 0;
     int worldNum = 0;
     int coinAmount = 0;
+    int endlessLevelAmount = 0;
+    int starAmount = 0;
+
+    float pastTropyX;
 
     long startTimeL;
     boolean firstSwip = true;
 
     boolean completed = false;
+    boolean endless = false;
+    boolean easyEndless = false;
+    boolean spawnNextLevel = true;
+    boolean deleteLastLevel = true;
 
+    int[][] blacklist = {
+            {1,2}
+    };
 
     float[][][][][] levels =
     {//World
             {//levels
-                    {{{2.5f,-17.5f},{1.5f,-17.5f},{0.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},},{},{},{},{{13.5f,-14.5f}},{},},
+                    {{{2.5f,-17.5f},{1.5f,-17.5f},{0.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},},{},{},{},{{13.5f,-14.5f}},{}
+                    ,{{6.15f},{5.125f},{4.1f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{},{},{},{{17.5f,-14.5f}},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{},{},{},{{17.5f,-14.5f}},{}
+                    ,{{7.65f},{6.375f},{5.1f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{19.5f,-17.5f},{21.5f,-17.5f},},{},{},{},{{21.5f,-14.5f}},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{19.5f,-17.5f},{21.5f,-17.5f},},{},{},{},{{21.5f,-14.5f}},{}
+                    ,{{24.97f},{20.81f},{16.65f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},},{},{{15.5f,-14.5f},{1.5f,-14.5f},{11.5f,-14.5f},},{},{{16.5f,-14.5f}},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},},{},{{15.5f,-14.5f},{1.5f,-14.5f},{11.5f,-14.5f},},{},{{16.5f,-14.5f}},{}
+                    ,{{11.55f},{9.62f},{7.7f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},},{},{{1.5f,-14.5f},{9.5f,-14.5f},{12.5f,-14.5f},{17.5f,-14.5f},},{},{{20.5f,-14.5f}},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},},{},{{1.5f,-14.5f},{9.5f,-14.5f},{12.5f,-14.5f},{17.5f,-14.5f},},{},{{20.5f,-14.5f}},{}
+                    ,{{13.5f},{11.25f},{9.0f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},{21.5f,-17.5f},{22.5f,-17.5f},{23.5f,-17.5f},},{},{{18.5f,-14.5f},{12.5f,-14.5f},{13.5f,-14.5f},{7.5f,-14.5f},{3.5f,-14.5f}},{},{{23.5f,-14.5f},},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},{21.5f,-17.5f},{22.5f,-17.5f},{23.5f,-17.5f},},{},{{18.5f,-14.5f},{12.5f,-14.5f},{13.5f,-14.5f},{7.5f,-14.5f},{3.5f,-14.5f}},{},{{23.5f,-14.5f},},{}
+                    ,{{15.6f},{13f},{10.4f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{19.5f,-17.5f},{20.5f,-17.5f},{21.5f,-17.5f},{23.5f,-17.5f},},{},{{20.5f,-14.5f},{14.5f,-14.5f},{12.5f,-14.5f},{6.5f,-14.5f},{3.5f,-14.5f},{2.5f,-14.5f}},{},{{23.5f,-14.5f},},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{19.5f,-17.5f},{20.5f,-17.5f},{21.5f,-17.5f},{23.5f,-17.5f},},{},{{20.5f,-14.5f},{14.5f,-14.5f},{12.5f,-14.5f},{6.5f,-14.5f},{3.5f,-14.5f},{2.5f,-14.5f}},{},{{23.5f,-14.5f},},{}
+                    ,{{15.9f},{13.25f},{10.6f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{{3.5f,-17.5f},},{{14.5f,-14.5f},{12.5f,-14.5f},{5.5f,-14.5f},{1.5f,-14.5f}},{},{{17.5f,-14.5f},},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{{3.5f,-17.5f},},{{14.5f,-14.5f},{12.5f,-14.5f},{5.5f,-14.5f},{1.5f,-14.5f}},{},{{17.5f,-14.5f},},{}
+                    ,{{9.75f},{8.125f},{6.5f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{11.5f,-17.5f},},{{4.5f,-17.5f},{8.5f,-17.5f},},{{5.5f,-14.5f},{1.5f,-14.5f},},{},{{11.5f,-14.5f}},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{11.5f,-17.5f},},{{4.5f,-17.5f},{8.5f,-17.5f},},{{5.5f,-14.5f},{1.5f,-14.5f},},{},{{11.5f,-14.5f}},{}
+                    ,{{8.1f},{6.75f},{5.4f}}},
 
             },
             {//levels
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{20.5f,-17.5f},},{{2.5f,-17.5f},{4.5f,-17.5f},{17.5f,-17.5f},},{{11.5f,-14.5f},{16.5f,-14.5f},{6.5f,-14.5f},{1.5f,-14.5f}},{},{{20.5f,-14.5f},},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{20.5f,-17.5f},},{{2.5f,-17.5f},{4.5f,-17.5f},{17.5f,-17.5f},},{{11.5f,-14.5f},{16.5f,-14.5f},{6.5f,-14.5f},{1.5f,-14.5f}},{},{{20.5f,-14.5f},},{}
+                    ,{{15f},{12.5f},{10f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{18.5f,-17.5f},},{{2.5f,-17.5f},{6.5f,-17.5f},{15.5f,-17.5f},},{{6.5f,-14.5f},{8.5f,-14.5f},{12.5f,-14.5f}},{},{{18.5f,-14.5f},},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{18.5f,-17.5f},},{{2.5f,-17.5f},{6.5f,-17.5f},{15.5f,-17.5f},},{{6.5f,-14.5f},{8.5f,-14.5f},{12.5f,-14.5f}},{},{{18.5f,-14.5f},},{}
+                    ,{{11.925f},{9.93f},{7.95f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{{4.5f,-17.5f},{8.5f,-17.5f},{12.5f,-17.5f},{16.5f,-17.5f},},{{15.5f,-14.5f},{8.5f,-14.5f},{9.5f,-14.5f},{1.5f,-14.5f}},{},{{13.5f,-14.5f},},{},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},},{{4.5f,-17.5f},{8.5f,-17.5f},{12.5f,-17.5f},{16.5f,-17.5f},},{{15.5f,-14.5f},{8.5f,-14.5f},{9.5f,-14.5f},{1.5f,-14.5f}},{},{{13.5f,-14.5f},},{}
+                    ,{{15.45f},{12.88f},{10.3f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{18.5f,-17.5f},},{},{{9.5f,-14.5f},{13.6f,-14.5f},{15.5f,-14.5f},},{},{{18.5f,-14.5f}},{{3.5f,-17.5f},},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{16.5f,-17.5f},{18.5f,-17.5f},},{},{{9.5f,-14.5f},{13.6f,-14.5f},{15.5f,-14.5f},},{},{{18.5f,-14.5f}},{{3.5f,-17.5f},}
+                    ,{{10.98f},{9.15f},{7.32f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{19.5f,-17.5f},{21.5f,-17.5f},},{{14.5f,-17.5f},{18.5f,-17.5f},},{{15.5f,-14.5f},{4.5f,-14.5f},{10.5f,-14.5f},},{},{{21.5f,-14.5f}},{{2.5f,-17.5f},{8.5f,-17.5f},},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{19.5f,-17.5f},{21.5f,-17.5f},},{{14.5f,-17.5f},{18.5f,-17.5f},},{{15.5f,-14.5f},{4.5f,-14.5f},{10.5f,-14.5f},},{},{{21.5f,-14.5f}},{{2.5f,-17.5f},{8.5f,-17.5f},}
+                    ,{{15.25f},{12.71f},{10.17f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},},{{4.5f,-17.5f},{9.5f,-17.5f},},{{1.5f,-14.5f}},{},{{14.5f,-14.5f},},{{2.5f,-17.5f},{7.5f,-17.5f},},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{12.5f,-17.5f},{14.5f,-17.5f},},{{4.5f,-17.5f},{9.5f,-17.5f},},{{1.5f,-14.5f}},{},{{14.5f,-14.5f},},{{2.5f,-17.5f},{7.5f,-17.5f},}
+                    ,{{12.15f},{10.12f},{8.1f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{15.5f,-17.5f},},{{4.5f,-17.5f},},{{7.5f,-14.5f},{1.5f,-14.5f}},{},{{15.5f,-14.5f},},{{5.5f,-17.5f},{10.5f,-17.5f},},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{11.5f,-17.5f},{15.5f,-17.5f},},{{4.5f,-17.5f},},{{7.5f,-14.5f},{1.5f,-14.5f}},{},{{15.5f,-14.5f},},{{5.5f,-17.5f},{10.5f,-17.5f},}
+                    ,{{14.02f},{11.68f},{9.35f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{19.5f,-17.5f},},{{4.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},},{{11.5f,-14.5f},{5.5f,-14.5f},{1.5f,-14.5f}},{},{{19.5f,-14.5f},},{{14.5f,-17.5f},{16.5f,-17.5f},},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{19.5f,-17.5f},},{{4.5f,-17.5f},{7.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},},{{11.5f,-14.5f},{5.5f,-14.5f},{1.5f,-14.5f}},{},{{19.5f,-14.5f},},{{14.5f,-17.5f},{16.5f,-17.5f},}
+                    ,{{21f},{17.5f},{14.00f}}},
 
-                    {{{0.5f,-17.5f},{1.5f,-17.5f},{6.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{15.5f,-17.5f},},{{2.5f,-17.5f},{4.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},},{{6.5f,-14.5f},{1.5f,-14.5f}},{},{{15.5f,-14.5f},},{{5.5f,-17.5f},{12.5f,-17.5f},},},
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{6.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{15.5f,-17.5f},},{{2.5f,-17.5f},{4.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},},{{6.5f,-14.5f},{1.5f,-14.5f}},{},{{15.5f,-14.5f},},{{5.5f,-17.5f},{12.5f,-17.5f},}
+                    ,{{19.08f},{15.9f},{12.72f}}},
+            },
+            {
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{8.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},{17.5f,-17.5f},{21.5f,-17.5f},},{{5.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{12.5f,-17.5f},},{{14.5f,-14.5f},{11.5f,-14.5f},{4.5f,-14.5f},{1.5f,-14.5f},},{},{{21.5f,-14.5f}},{{3.5f,-17.5f},{16.5f,-17.5f},}
+                    ,{{19.08f},{15.9f},{12.72f}}},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{10.5f,-17.5f},{14.5f,-17.5f},{16.5f,-17.5f},{17.5f,-17.5f},{18.5f,-17.5f},{23.5f,-17.5f},{25.5f,-17.5f},},{{4.5f,-17.5f},{12.5f,-17.5f},{13.5f,-17.5f},{20.5f,-17.5f},{22.5f,-17.5f},},{{17.5f,-14.5f},{14.5f,-14.5f},{12.5f,-14.5f},{4.5f,-14.5f},{2.5f,-14.5f}},{},{{25.5f,-14.5f},},{{3.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{15.5f,-17.5f},{19.5f,-17.5f},}
+                    ,{{19.08f},{15.9f},{12.72f}}},
+
+                    {{{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{9.5f,-17.5f},{13.5f,-17.5f},{15.5f,-17.5f},},{{4.5f,-17.5f},{12.5f,-17.5f},},{{9.5f,-14.5f},{1.5f,-14.5f},{3.5f,-14.5f}},{{3.5f,-17.5f},},{{15.5f,-14.5f},},{{7.5f,-17.5f},{8.5f,-17.5f},}
+                    ,{{19.08f},{15.9f},{12.72f}}},
+
+                    {
+                            {{8.5f,-17.5f},{9.5f,-17.5f},},
+                            {},
+                            {{6.5f,-14.5f},{7.5f,-14.5f},{1.5f,-14.5f},},
+                            {{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{5.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},},
+                            {{9.5f,-14.5f}},
+                            {}
+                    ,{{19.08f},{15.9f},{12.72f}}},
+
+                    {
+                            {{10.5f,-17.5f},{19.5f,-17.5f},{21.5f,-17.5f},{23.5f,-17.5f},},
+                            {{12.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},},
+                            {{17.5f,-14.5f},{7.5f,-14.5f},{4.5f,-14.5f},{1.5f,-14.5f}},
+                            {{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{17.5f,-17.5f},},
+                            {{23.5f,-14.5f},},
+                            {{5.5f,-17.5f},{9.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},}
+                    ,{{19.08f},{15.9f},{12.72f}}},
+
+
             },
 
             /*{
@@ -154,6 +216,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public static float gravity =  -0.02f;
     public static float cameraDist = -4;
     public static float cameraCenter = -14;
+    public float halfScreenWidth;
     public float ratio;
 
 
@@ -166,6 +229,60 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         return  (double)(System.currentTimeMillis() - startTimeL)/1000;
 
     }
+    public void changeSeg(){
+        endlessLevelAmount++;
+
+        int levelDiffculty = (int) Math.floor(Math.random()*(endlessLevelAmount)*2);
+
+        if((int) Math.floor(levelDiffculty/levels[0].length) < levels.length) {
+            worldNum = (int) Math.floor(levelDiffculty / levels[0].length);
+        }
+        else{
+            worldNum = levels.length-1;
+        }
+        mapNum = levelDiffculty%levels[0].length;
+        for (int i = 0; i < blacklist.length; i++){
+            if(worldNum == blacklist[i][0] && mapNum == blacklist[i][1]){
+                changeSeg();
+                return;
+            }
+        }
+        EnlessModeWorlds.add(worldNum);
+        EnlessModeLevels.add(mapNum);
+    }
+    public void deleteLastLevel(){
+        for (int i = 0; i < levels[EnlessModeWorlds.get(endlessLevelAmount-2)][EnlessModeLevels.get(endlessLevelAmount-2)][0].length; i++) {
+            ground.remove(0);
+        }
+        for (int i = 0; i < levels[EnlessModeWorlds.get(endlessLevelAmount-2)][EnlessModeLevels.get(endlessLevelAmount-2)][1].length; i++) {
+            trampoline.remove(0);
+        }
+        for (int i = 0; i < levels[EnlessModeWorlds.get(endlessLevelAmount-2)][EnlessModeLevels.get(endlessLevelAmount-2)][3].length; i++) {
+            BABlocks.remove(0);
+        }
+        for (int i = 0; i < levels[EnlessModeWorlds.get(endlessLevelAmount-2)][EnlessModeLevels.get(endlessLevelAmount-2)][5].length; i++) {
+            supaTramp.remove(0);
+        }
+    }
+    public void createEndlessMap(){
+        changeSeg();
+        if(worldNum > levels.length-1){
+            worldNum = levels.length-1;
+        }
+        for (int i = 0; i < levels[worldNum][mapNum][0].length; i++) {
+            ground.add(new Obstacle(levels[worldNum][mapNum][0][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][0][i][1], 1, 5, "ground", grassTex, this));
+        }
+        for (int i = 0; i < levels[worldNum][mapNum][1].length; i++) {
+            trampoline.add(new Obstacle(levels[worldNum][mapNum][1][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][1][i][1], 1, 5, "tramp", trampTex, this));
+        }
+
+        for (int i = 0; i < levels[worldNum][mapNum][3].length; i++) {
+            BABlocks.add(new Obstacle(levels[worldNum][mapNum][3][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][3][i][1], 1, 5, "BABlock", stoneTex, this));
+        }
+        for (int i = 0; i < levels[worldNum][mapNum][5].length; i++) {
+            supaTramp.add(new Obstacle(levels[worldNum][mapNum][5][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][5][i][1], 1, 5, "supaTramp", supaTrampTex, this));
+        }
+    }
     public MyGLRenderer(Context context,int world, int level){
         mActivityContext = context;
 
@@ -173,7 +290,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         Log.d("World", "accessed world: " + world);
         Log.d("Level", "loaded level: " + level);
-        if(world <levels.length) {
+        if(world <levels.length && world >= 0) {
             worldNum = world;
             if (level < levels[worldNum].length) {
                 mapNum = level;
@@ -181,6 +298,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 mapNum = 0;
                 Log.d("Level", "level error: Level " + level + " does not exist");
             }
+        }
+        else if(world == -1) {
+            Log.d("World", "Loading Endless mode");
+            mapNum = 0;
+            worldNum = -1;
+        }else if(world == -2) {
+            Log.d("World", "Loading Easy Endless mode");
+            mapNum = 0;
+            worldNum = -2;
         }
         else{
             Log.d("World", "world error: World " + world + " does not exist");
@@ -203,46 +329,92 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         goldtrophyTex = loadTexture(mActivityContext, R.drawable.goldtrophy);
         silvertrophyTex = loadTexture(mActivityContext, R.drawable.silvertrophy);
         bronzetrophyTex = loadTexture(mActivityContext, R.drawable.bronzetrophy);
+
+        mPlayer   = new Player(playerTex, this);
+
         loadMap();
         //background = new Obstacle(0,0,-cameraDist*ratio*2,-cameraDist*2,"background",this);
     }
     public void loadMap(){
+
         ground.clear();
         trampoline.clear();
         coins.clear();
         BABlocks.clear();
 
+        if(worldNum < 0){
+            if(worldNum == -2){
+                easyEndless = true;
+            }
+            endless = true;
+        }
+
         firstSwip = true;
 
+        if(endless) changeSeg();
+
         mPlayer   = new Player(playerTex, this);
+        for (int i = 0; i < levels[worldNum][mapNum][0].length; i++) {
+            ground.add(new Obstacle(levels[worldNum][mapNum][0][i][0], levels[worldNum][mapNum][0][i][1], 1, 5, "ground", grassTex, this));
+        }
+        for (int i = 0; i < levels[worldNum][mapNum][1].length; i++) {
+            trampoline.add(new Obstacle(levels[worldNum][mapNum][1][i][0], levels[worldNum][mapNum][1][i][1], 1, 5, "tramp", trampTex, this));
+        }
+        for (int i = 0; i < levels[worldNum][mapNum][2].length; i++) {
+            coins.add(new Obstacle(levels[worldNum][mapNum][2][i][0], levels[worldNum][mapNum][2][i][1], .4f, .4f, "coin", coinTex, this));
+        }
+        for (int i = 0; i < levels[worldNum][mapNum][3].length; i++) {
+            BABlocks.add(new Obstacle(levels[worldNum][mapNum][3][i][0], levels[worldNum][mapNum][3][i][1], 1, 5, "BABlock", stoneTex, this));
+        }
+        trophy = new Obstacle(levels[worldNum][mapNum][4][0][0], levels[worldNum][mapNum][4][0][1], .5f, .5f, "trophy", goldtrophyTex, this);
 
+        for (int i = 0; i < levels[worldNum][mapNum][5].length; i++) {
+            supaTramp.add(new Obstacle(levels[worldNum][mapNum][5][i][0], levels[worldNum][mapNum][5][i][1], 1, 5, "supaTramp", supaTrampTex, this));
+        }
 
-        for(int i = 0; i < levels[worldNum][mapNum][0].length; i++){
-            ground.add(new Obstacle(levels[worldNum][mapNum][0][i][0], levels[worldNum][mapNum][0][i][1], 1, 5, "ground",grassTex ,this));
-        }
-        for(int i = 0; i < levels[worldNum][mapNum][1].length; i++){
-            trampoline.add(new Obstacle(levels[worldNum][mapNum][1][i][0],levels[worldNum][mapNum][1][i][1], 1, 5, "tramp",trampTex , this));
-        }
-        for(int i = 0; i < levels[worldNum][mapNum][2].length; i++){
-            coins.add(new Obstacle(levels[worldNum][mapNum][2][i][0],levels[worldNum][mapNum][2][i][1], .4f, .4f, "coin",coinTex , this));
-        }
-        for(int i = 0; i < levels[worldNum][mapNum][3].length; i++){
-            BABlocks.add(new Obstacle(levels[worldNum][mapNum][3][i][0],levels[worldNum][mapNum][3][i][1], 1, 5, "BABlock",stoneTex , this));
-        }
-        trophy = new Obstacle(levels[worldNum][mapNum][4][0][0],levels[worldNum][mapNum][4][0][1], .5f, .5f, "trophy",goldtrophyTex , this);
-
-        for(int i = 0; i < levels[worldNum][mapNum][5].length; i++){
-            supaTramp.add(new Obstacle(levels[worldNum][mapNum][5][i][0],levels[worldNum][mapNum][5][i][1], 1, 5, "supaTramp",supaTrampTex , this));
-        }
+        pastTropyX = trophy.x;
     }
     public void endGame(){
         if(!completed) {
 
             if (coins.size() == 0) {
-                completed = true;
-                Log.d("End Game", "Yay! ...and there was much rejoicing..." + getTime());
 
-                ((OpenGLES20Activity)mActivityContext).run();
+
+                if (endless) {
+                    if(getTime() > levels[EnlessModeWorlds.get(EnlessModeWorlds.size()-2)][EnlessModeLevels.get(EnlessModeLevels.size()-2)][levels[worldNum][mapNum].length - 1][0][0] && !easyEndless){
+                        ((OpenGLES20Activity) mActivityContext).run();
+                    } else {
+                        spawnNextLevel = true;
+                        deleteLastLevel = true;
+                        pastTropyX = trophy.x;
+                        for (int i = 0; i < levels[worldNum][mapNum][2].length; i++) {
+                            coins.add(new Obstacle(levels[worldNum][mapNum][2][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][2][i][1], .4f, .4f, "coin", coinTex, this));
+                        }
+                        trophy = new Obstacle(levels[worldNum][mapNum][4][0][0] + trophy.x + 1.5f, levels[worldNum][mapNum][4][0][1], .5f, .5f, "trophy", goldtrophyTex, this);
+                        startTimeL = System.currentTimeMillis();
+                    }
+                }
+                else{
+                    for (int i = 0; i < levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1].length; i++) {
+                        if ( getTime() < levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1][i][0]){
+                            if(i == 2){
+                                starAmount = 3;
+                            } else if(i == 1){
+                                starAmount = 2;
+                            } else if(i == 0){
+                                starAmount = 1;
+                            } else {
+                                starAmount = 0;
+                            }
+                        }
+                    }
+                    completed = true;
+                    Log.d("End Game", "Yay! ...and there was much rejoicing..." + starAmount);
+
+                    ((OpenGLES20Activity) mActivityContext).run();
+
+                }
+
                // RelativeLayout dankness = (RelativeLayout)((Activity)mActivityContext).getWindow().getDecorView().findViewById(R.id.dankEndScreen);
                 //FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT);
 
@@ -259,7 +431,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //update all objects
         mPlayer.update();
 
-
+        if(mPlayer.posX > trophy.x - halfScreenWidth && endless && spawnNextLevel){
+            createEndlessMap();
+            spawnNextLevel = false;
+        }
+        if(mPlayer.posX - 1 > pastTropyX + halfScreenWidth  && endless && deleteLastLevel){
+            deleteLastLevel();
+            deleteLastLevel = false;
+        }
 
 
 
@@ -329,6 +508,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
        // Log.d("Player", "posy: " + mPlayer.posY);
         for(int i = 0; i < ground.size(); i++) {
+           // Log.d("End Game",  "" +( -ground.get(5).x - -mPlayer.posX) +"");
+
             Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
             Matrix.translateM(mModelMatrix, 0, -ground.get(i).x, ground.get(i).y, 0); // translation to the player position
 
@@ -341,6 +522,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
             // Draw square
             ground.get(i).draw(scratch);
+
         }
         for(int i = 0; i < coins.size(); i++) {
             Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
@@ -414,10 +596,30 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             frames = 0;
 
             startTime = System.nanoTime();
+
+            if(!endless){
+                checkTrophy();
+            }
+
         }
 
     }
-
+    public void checkTrophy(){
+        for (int i = 0; i < levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1].length; i++) {
+            if ( getTime() < levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1][i][0]){
+                if(i == 2){
+                   trophy.mTextureDataHandle = goldtrophyTex;
+                }
+                else if(i == 1){
+                   trophy.mTextureDataHandle = silvertrophyTex;
+                } else if(i == 0){
+                    trophy.mTextureDataHandle = bronzetrophyTex;
+                } else {
+                    trophy.mTextureDataHandle = bronzetrophyTex;
+                }
+            }
+        }
+    }
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         // Adjust the viewport based on geometry changes,
@@ -429,6 +631,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         //Create background here because now we have ratio
         background = new Obstacle(0,0,-cameraDist*2,-cameraDist*2,"background",backgroundTex,this);
+        halfScreenWidth = -cameraDist*ratio;
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method

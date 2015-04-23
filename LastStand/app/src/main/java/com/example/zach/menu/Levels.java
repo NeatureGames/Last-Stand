@@ -27,7 +27,7 @@ public class Levels extends FragmentActivity {
 
     private int rows = 3;
     private int coloums = 3;
-    private int worlds = 2;
+    private int worlds = 3;
     private int buttonMarginsHoriz = 10;
     private int buttonMarginsVert = 15;
     private int buttonPaddingTop = 10;
@@ -47,51 +47,60 @@ public class Levels extends FragmentActivity {
 
         createTables();
     }
-    public boolean onTouchEvent(MotionEvent touchevent)
-    {
+    public boolean onTouchEvent(MotionEvent touchevent) {
+
         switch (touchevent.getAction())
         {
-            // when user first touches the screen to swap
             case MotionEvent.ACTION_DOWN:
             {
                 lastX = touchevent.getX();
                 break;
             }
+
             case MotionEvent.ACTION_UP:
             {
                 float currentX = touchevent.getX();
 
-                // if left to right swipe on screen
                 if (lastX < currentX)
                 {
-                    // If no more View/Child to flip
-                    if (viewFlipper.getDisplayedChild() == 0)
+                    if (viewFlipper.getDisplayedChild()==0)
                         break;
 
-                    // set the required Animation type to ViewFlipper
-                    // The Next screen will come in form Left and current Screen will go OUT from Right
                     viewFlipper.setInAnimation(this, R.transition.in_from_left);
                     viewFlipper.setOutAnimation(this, R.transition.out_to_right);
-                    // Show the next Screen
+//                    vf.showNext();
+                    viewFlipper.showPrevious();
+                }
+
+                if (lastX > currentX)
+                {
+//                    if (vf.getDisplayedChild()==1)
+                    if (viewFlipper.getDisplayedChild()==viewFlipper.getChildCount()-1)
+                        break;
+
+                    viewFlipper.setInAnimation(this, R.transition.in_from_right);
+                    viewFlipper.setOutAnimation(this, R.transition.out_to_left);
+//                    vf.showPrevious();
                     viewFlipper.showNext();
                 }
 
-                // if right to left swipe on screen
-                if (lastX > currentX)
-                {
-                    if (viewFlipper.getDisplayedChild() == 1)
-                        break;
-                    // set the required Animation type to ViewFlipper
-                    // The Next screen will come in form Right and current Screen will go OUT from Left
-                    viewFlipper.setInAnimation(this, R.transition.in_from_right);
-                    viewFlipper.setOutAnimation(this, R.transition.out_to_left);
-                    // Show The Previous Screen
-                    viewFlipper.showPrevious();
-                }
                 break;
             }
+
+            case MotionEvent.ACTION_MOVE:
+            {
+                float tempX = touchevent.getX();
+                int scrollX = (int) (tempX - lastX);
+
+                //vf.scrollBy(scrollX, 0);
+
+                break;
+            }
+
         }
+
         return false;
+
     }
 
 

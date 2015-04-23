@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import com.example.zach.laststand.OpenGLES20Activity;
 import com.example.zach.laststand.R;
 
 public class Menu extends Activity {
@@ -54,7 +55,9 @@ public class Menu extends Activity {
             @Override
             public void onClick(View arg0) {
 
-                Intent intent = new Intent(context, Levels.class);
+                Intent intent = new Intent(context, OpenGLES20Activity.class);
+                intent.putExtra("level", 1);
+                intent.putExtra("world", -1);
                 startActivity(intent);
 
             }
@@ -70,7 +73,9 @@ public class Menu extends Activity {
             @Override
             public void onClick(View arg0) {
 
-                Intent intent = new Intent(context, Levels.class);
+                Intent intent = new Intent(context, OpenGLES20Activity.class);
+                intent.putExtra("level", 1);
+                intent.putExtra("world", -2);
                 startActivity(intent);
 
             }

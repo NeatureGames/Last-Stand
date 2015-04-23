@@ -52,7 +52,7 @@
                 android:layout_width="225dp"
                 android:layout_height="50dp"
                 android:layout_row="0"
-                android:text="Buy Gold"
+                android:text="Easy Endless"
                 android:id="@+id/buygold"
                 android:textColor="#FFFFFF"
                 android:textSize = "20sp"

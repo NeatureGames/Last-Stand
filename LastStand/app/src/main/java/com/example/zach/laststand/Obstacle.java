@@ -64,7 +64,7 @@ public class Obstacle {
     private final int mTextureCoordinateDataSize = 2;
 
     /** This is a handle to our texture data. */
-    private int mTextureDataHandle;
+    public int mTextureDataHandle;
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.

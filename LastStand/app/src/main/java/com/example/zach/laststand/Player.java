@@ -258,7 +258,12 @@ public class Player {
 
         // Respawn
         if(posY < game.cameraCenter+game.cameraDist-height){
-            game.loadMap();
+            if(game.endless){
+                ((OpenGLES20Activity) game.mActivityContext).run();
+            }
+            else {
+                game.loadMap();
+            }
         }
         if(!grounded){
             int multFac = (velX<0)?1:-1;
@@ -295,44 +300,44 @@ public class Player {
         float vX = (this.posX+ this.velX) - (obj.x);
         float vY = (this.posY+ this.velY)- (obj.y);
 
-        float hWidths = (this.width / 2) + (obj.width / 2);
-        float hHeights = (this.height / 2) + (obj.height / 2);
+        if(vX < 2 && vX > -2) {
+            float hWidths = (this.width / 2) + (obj.width / 2);
+            float hHeights = (this.height / 2) + (obj.height / 2);
 
-        String colDir = "";
+            String colDir = "";
 
 
-        if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights){
+            if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
 
-            float oX = hWidths - Math.abs(vX);
-            float oY = hHeights - Math.abs(vY);
+                float oX = hWidths - Math.abs(vX);
+                float oY = hHeights - Math.abs(vY);
 
-            if (oX >= oY) {
+                if (oX >= oY) {
 
-                if (vY > 0) {
-                    colDir = "t";
-                    //a->position.y = b->position.y + b->height / 2 + a->height / 2;
-                    //a->position.y += oY;
-                }
-                else {
-                    colDir = "b";
-                    //a->position.y = b->position.y - b->height / 2 - a->height / 2;
-                    //a->position.y -= oY;
+                    if (vY > 0) {
+                        colDir = "t";
+                        //a->position.y = b->position.y + b->height / 2 + a->height / 2;
+                        //a->position.y += oY;
+                    } else {
+                        colDir = "b";
+                        //a->position.y = b->position.y - b->height / 2 - a->height / 2;
+                        //a->position.y -= oY;
+                    }
+                } else {
+                    if (vX > 0) {
+                        colDir = "l";
+                        //a->position.x = b->position.x + b->width / 2 + a->width / 2;
+                        //a->position.x += oX;
+                    } else {
+                        colDir = "r";
+                        //a->position.x = b->position.x - b->width / 2 - a->width / 2;
+                        //a->position.x -= oX;
+                    }
                 }
             }
-            else {
-                if (vX > 0) {
-                    colDir = "l";
-                    //a->position.x = b->position.x + b->width / 2 + a->width / 2;
-                    //a->position.x += oX;
-                }
-                else {
-                    colDir = "r";
-                    //a->position.x = b->position.x - b->width / 2 - a->width / 2;
-                    //a->position.x -= oX;
-                }
-            }
+            return colDir;
         }
-        return colDir;
+        return"";
     }
     private void handleCollision(){
         for(int i = 0; i<game.ground.size(); i++){
