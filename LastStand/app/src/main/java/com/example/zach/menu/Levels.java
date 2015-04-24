@@ -193,5 +193,10 @@ public class Levels extends FragmentActivity {
         final float scale = this.getResources().getDisplayMetrics().density;
         return (int) (dps * scale + 0.5f);
     }
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(Levels.this, Menu.class));
+        finish();
+    }
 }

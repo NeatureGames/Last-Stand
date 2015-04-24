@@ -219,6 +219,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public float halfScreenWidth;
     public float ratio;
 
+    private boolean createObjectQueue = false;
+    private int queueMapNum = 0;
+    private int queueWorldNum = 0;
+    private int queueObjectIndex = 0;
+    private int queueTypeIndex = 0;
+    private int queueSpawnAmount = 2;
+    private float queueTrophyX = 0;
 
     long startTime = System.nanoTime();
     private float frames = 0;
@@ -265,7 +272,48 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
     }
     public void createEndlessMap(){
-        changeSeg();
+        if(!createObjectQueue){ // first time running function in queue, start building process
+            Log.d("Queue", "Started Queue");
+            changeSeg();
+            if(worldNum > levels.length-1){
+                worldNum = levels.length-1;
+            }
+
+            //create specific queue map and world nums so they won't change
+            queueMapNum = mapNum;
+            queueWorldNum = worldNum;
+            queueTrophyX = trophy.x;
+            createObjectQueue = true;
+        }
+        else{
+            for(int i = 0; i<queueSpawnAmount; i++){
+                if(queueObjectIndex >= levels[queueWorldNum][queueMapNum][queueTypeIndex].length){
+                    queueTypeIndex++;
+                    queueObjectIndex = 0;
+                }
+                if(queueTypeIndex<levels[queueWorldNum][queueMapNum].length) {
+
+                    if (queueTypeIndex == 0 && levels[queueWorldNum][queueMapNum][0].length > 0)
+                        ground.add(new Obstacle(levels[queueWorldNum][queueMapNum][0][queueObjectIndex][0] + queueTrophyX + 1.5f, levels[worldNum][mapNum][0][queueObjectIndex][1], 1, 5, "ground", grassTex, this));
+                    else if (queueTypeIndex == 1 && levels[queueWorldNum][queueMapNum][1].length > 0)
+                        trampoline.add(new Obstacle(levels[queueWorldNum][queueMapNum][1][queueObjectIndex][0] + queueTrophyX + 1.5f, levels[worldNum][mapNum][1][queueObjectIndex][1], 1, 5, "tramp", trampTex, this));
+                    else if (queueTypeIndex == 3 && levels[queueWorldNum][queueMapNum][3].length > 0)
+                        BABlocks.add(new Obstacle(levels[queueWorldNum][queueMapNum][3][queueObjectIndex][0] + queueTrophyX + 1.5f, levels[worldNum][mapNum][3][queueObjectIndex][1], 1, 5, "BABlock", stoneTex, this));
+                    else if (queueTypeIndex == 5 && levels[queueWorldNum][queueMapNum][5].length > 0)
+                        supaTramp.add(new Obstacle(levels[queueWorldNum][queueMapNum][5][queueObjectIndex][0] + queueTrophyX + 1.5f, levels[worldNum][mapNum][5][queueObjectIndex][1], 1, 5, "supaTramp", supaTrampTex, this));
+
+                    queueObjectIndex++;
+                }
+                else{
+                    Log.d("Queue", "Finished Queue");
+                    createObjectQueue = false;
+                    queueObjectIndex = 0;
+                    queueTypeIndex = 0;
+                    break;
+                }
+            }
+        }
+       /* changeSeg();
         if(worldNum > levels.length-1){
             worldNum = levels.length-1;
         }
@@ -281,7 +329,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
         for (int i = 0; i < levels[worldNum][mapNum][5].length; i++) {
             supaTramp.add(new Obstacle(levels[worldNum][mapNum][5][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][5][i][1], 1, 5, "supaTramp", supaTrampTex, this));
-        }
+        }*/
     }
     public MyGLRenderer(Context context,int world, int level){
         mActivityContext = context;
@@ -433,13 +481,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         if(mPlayer.posX > trophy.x - halfScreenWidth && endless && spawnNextLevel){
             createEndlessMap();
+
             spawnNextLevel = false;
         }
+
         if(mPlayer.posX - 1 > pastTropyX + halfScreenWidth  && endless && deleteLastLevel){
             deleteLastLevel();
             deleteLastLevel = false;
         }
-
+        if(createObjectQueue){
+            createEndlessMap();
+        }
 
 
         float[] scratch = new float[16];

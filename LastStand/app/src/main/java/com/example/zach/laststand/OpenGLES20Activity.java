@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.zach.menu.Levels;
 import com.example.zach.menu.Menu;
 
 
@@ -130,5 +131,17 @@ public class OpenGLES20Activity extends Activity {
         // If you de-allocated graphic objects for onPause()
         // this is a good place to re-allocate them.
         mGLView.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(worldnum > -1) {
+            startActivity(new Intent(OpenGLES20Activity.this, Levels.class));
+        }
+        else{
+            startActivity(new Intent(OpenGLES20Activity.this, Menu.class));
+        }
+        finish();
     }
 }
