@@ -63,12 +63,14 @@ public class Player {
     //player controls
     public static float width = .6f;
     public static float height = .6f;
+    public static float halfWidth = width/2;
+    public static float halfHeight = height/2;
     public float posX = 0.5f;
     public float posY = -14;
     public float mAngle;
 
-    private float velX = 0;
-    private float velY = 0;
+    public float velX = 0;
+    public float velY = 0;
     private float jumpHeight = 1;
     private float jumpWidth = 1;
     //private boolean jumping = false;
@@ -85,12 +87,12 @@ public class Player {
             width/2, -height/2, 0.0f,   // bottom right
             width/2,  height/2, 0.0f }; // top right*/
    static float squareCoords[] = {
-           -width/2,  height/2, 0.0f,
-           -width/2, -height/2, 0.0f,
-           width/2, height/2, 0.0f,
-           -width/2,  -height/2, 0.0f,
-           width/2, -height/2, 0.0f,
-           width/2,  height/2, 0.0f, };
+           -halfWidth,  halfHeight, 0.0f,
+           -halfWidth, -halfHeight, 0.0f,
+           halfWidth, halfHeight, 0.0f,
+           -halfWidth,  -halfHeight, 0.0f,
+           halfWidth, -halfHeight, 0.0f,
+           halfWidth,  halfHeight, 0.0f, };
     private final short drawOrder[] = { 0, 1, 2, 3, 4, 5 }; // order to draw vertices
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
@@ -259,7 +261,13 @@ public class Player {
         // Respawn
         if(posY < game.cameraCenter+game.cameraDist-height){
             if(game.endless){
-                ((OpenGLES20Activity) game.mActivityContext).run();
+                if(!game.completed) {
+                    game.running = false;
+                    velX = 0;
+                    velY = 0;
+                    game.completed = true;
+                    ((OpenGLES20Activity) game.mActivityContext).run();
+                }
             }
             else {
                 game.loadMap();
@@ -300,9 +308,9 @@ public class Player {
         float vX = (this.posX+ this.velX) - (obj.x);
         float vY = (this.posY+ this.velY)- (obj.y);
 
-        if(vX < 2 && vX > -2) {
-            float hWidths = (this.width / 2) + (obj.width / 2);
-            float hHeights = (this.height / 2) + (obj.height / 2);
+        if(vX < game.halfScreenWidth && vX > -game.halfScreenWidth) {
+            float hWidths = (halfWidth) + (obj.halfWidth);
+            float hHeights = (halfHeight) + (obj.halfHeight);
 
             String colDir = "";
 
@@ -344,7 +352,7 @@ public class Player {
             String dir = checkCollision(game.ground.get(i));
 
             if(dir == "t"){
-                posY = game.ground.get(i).y + game.ground.get(i).height / 2 + height / 2;
+                posY = game.ground.get(i).y + game.ground.get(i).halfHeight + halfHeight;
                 posX = game.ground.get(i).x;
                 currentPlatform = game.ground.get(i);
                 grounded = true;
@@ -356,7 +364,7 @@ public class Player {
             String dir = checkCollision(game.BABlocks.get(i));
 
             if(dir == "t"){
-                posY = game.BABlocks.get(i).y + game.BABlocks.get(i).height / 2 + height / 2;
+                posY = game.BABlocks.get(i).y + game.BABlocks.get(i).halfHeight + halfHeight;
                 posX = game.BABlocks.get(i).x;
                 currentPlatform = game.BABlocks.get(i);
                 grounded = true;
@@ -378,7 +386,7 @@ public class Player {
             String dir = checkCollision(game.trampoline.get(i));
 
             if(dir == "t"){
-                posY = game.trampoline.get(i).y + game.trampoline.get(i).height / 2 + height / 2;
+                posY = game.trampoline.get(i).y + game.trampoline.get(i).halfHeight + halfHeight;
                 posX = game.trampoline.get(i).x;
                 grounded = true;
 
@@ -396,7 +404,7 @@ public class Player {
             String dir = checkCollision(game.supaTramp.get(i));
 
             if(dir == "t"){
-                posY = game.supaTramp.get(i).y + game.supaTramp.get(i).height / 2 + height / 2;
+                posY = game.supaTramp.get(i).y + game.supaTramp.get(i).halfHeight + halfHeight;
                 posX = game.supaTramp.get(i).x;
                 grounded = true;
 

@@ -72,11 +72,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     int worldNum = 0;
     int coinAmount = 0;
     int endlessLevelAmount = 0;
-    int starAmount = 0;
+    public int starAmount = 0;
 
     float pastTropyX;
 
     long startTimeL;
+    float currentEnlessModeFinishTimeForTheCurrentSegmentOfTheEnlessModeDoesNotIncludeEasyEnlessModeOrLevelMode = 0;
     boolean firstSwip = true;
 
     boolean completed = false;
@@ -84,6 +85,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     boolean easyEndless = false;
     boolean spawnNextLevel = true;
     boolean deleteLastLevel = true;
+    boolean running = true;
 
     int[][] blacklist = {
             {1,2}
@@ -168,10 +170,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                     ,{{19.08f},{15.9f},{12.72f}}},
 
                     {
-                            {{10.5f,-17.5f},{19.5f,-17.5f},{21.5f,-17.5f},{23.5f,-17.5f},},
+                            {{10.5f,-17.5f},{19.5f,-17.5f},{23.5f,-17.5f},},
                             {{12.5f,-17.5f},{18.5f,-17.5f},{20.5f,-17.5f},},
                             {{17.5f,-14.5f},{7.5f,-14.5f},{4.5f,-14.5f},{1.5f,-14.5f}},
-                            {{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{17.5f,-17.5f},},
+                            {{0.5f,-17.5f},{1.5f,-17.5f},{2.5f,-17.5f},{3.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{17.5f,-17.5f},{21.5f,-17.5f},},
                             {{23.5f,-14.5f},},
                             {{5.5f,-17.5f},{9.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},}
                     ,{{19.08f},{15.9f},{12.72f}}},
@@ -381,6 +383,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mPlayer   = new Player(playerTex, this);
 
         loadMap();
+
         //background = new Obstacle(0,0,-cameraDist*ratio*2,-cameraDist*2,"background",this);
     }
     public void loadMap(){
@@ -399,7 +402,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         firstSwip = true;
 
-        if(endless) changeSeg();
+        if(endless){
+            changeSeg();
+            currentEnlessModeFinishTimeForTheCurrentSegmentOfTheEnlessModeDoesNotIncludeEasyEnlessModeOrLevelMode = levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1][0][0];
+        }
 
         mPlayer   = new Player(playerTex, this);
         for (int i = 0; i < levels[worldNum][mapNum][0].length; i++) {
@@ -426,12 +432,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         if(!completed) {
 
             if (coins.size() == 0) {
-
-
                 if (endless) {
-                    if(getTime() > levels[EnlessModeWorlds.get(EnlessModeWorlds.size()-2)][EnlessModeLevels.get(EnlessModeLevels.size()-2)][levels[worldNum][mapNum].length - 1][0][0] && !easyEndless){
-                        ((OpenGLES20Activity) mActivityContext).run();
-                    } else {
+
+                        currentEnlessModeFinishTimeForTheCurrentSegmentOfTheEnlessModeDoesNotIncludeEasyEnlessModeOrLevelMode = levels[EnlessModeWorlds.get(EnlessModeWorlds.size()-1)][EnlessModeLevels.get(EnlessModeLevels.size()-1)][levels[worldNum][mapNum].length - 1][0][0];
                         spawnNextLevel = true;
                         deleteLastLevel = true;
                         pastTropyX = trophy.x;
@@ -440,9 +443,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                         }
                         trophy = new Obstacle(levels[worldNum][mapNum][4][0][0] + trophy.x + 1.5f, levels[worldNum][mapNum][4][0][1], .5f, .5f, "trophy", goldtrophyTex, this);
                         startTimeL = System.currentTimeMillis();
-                    }
+
                 }
                 else{
+                    mPlayer.velX = 0;
+                    mPlayer.velY = 0;
+                    running = false;
                     for (int i = 0; i < levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1].length; i++) {
                         if ( getTime() < levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1][i][0]){
                             if(i == 2){
@@ -558,72 +564,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Draw square
         trophy.draw(scratch);
 
+
        // Log.d("Player", "posy: " + mPlayer.posY);
         for(int i = 0; i < ground.size(); i++) {
            // Log.d("End Game",  "" +( -ground.get(5).x - -mPlayer.posX) +"");
-
-            Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-            Matrix.translateM(mModelMatrix, 0, -ground.get(i).x, ground.get(i).y, 0); // translation to the player position
-
-            Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
-
-            mTempMatrix = mModelMatrix.clone();
-            Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
-
-            mTempMatrix = mMVPMatrix.clone();
-            Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
-            // Draw square
-            ground.get(i).draw(scratch);
-
-        }
-        for(int i = 0; i < coins.size(); i++) {
-            Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-            Matrix.translateM(mModelMatrix, 0, -coins.get(i).x, coins.get(i).y, 0); // translation to the player position
-
-            Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
-
-            mTempMatrix = mModelMatrix.clone();
-            Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
-
-            mTempMatrix = mMVPMatrix.clone();
-            Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
-            // Draw square
-            coins.get(i).draw(scratch);
-        }
-        for(int i = 0; i < trampoline.size(); i++) {
-            Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-            Matrix.translateM(mModelMatrix, 0, -trampoline.get(i).x, trampoline.get(i).y, 0); // translation to the player position
-
-            Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
-
-            mTempMatrix = mModelMatrix.clone();
-            Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
-
-            mTempMatrix = mMVPMatrix.clone();
-            Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
-            // Draw square
-            trampoline.get(i).draw(scratch);
-        }
-        for(int i = 0; i < supaTramp.size(); i++) {
-            Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-            Matrix.translateM(mModelMatrix, 0, -supaTramp.get(i).x, supaTramp.get(i).y, 0); // translation to the player position
-
-            Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
-
-            mTempMatrix = mModelMatrix.clone();
-            Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
-
-            mTempMatrix = mMVPMatrix.clone();
-            Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
-            // Draw square
-            supaTramp.get(i).draw(scratch);
-        }
-        for(int i = 0; i < BABlocks.size(); i++) {
-            if(!BABlocks.get(i).deleted) {
-                BABlocks.get(i).update();
-
+            if(-ground.get(i).x < -mPlayer.posX + halfScreenWidth+1 && -ground.get(i).x > -mPlayer.posX - halfScreenWidth-1) {
                 Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
-                Matrix.translateM(mModelMatrix, 0, -BABlocks.get(i).x, BABlocks.get(i).y, 0); // translation to the player position
+                Matrix.translateM(mModelMatrix, 0, -ground.get(i).x, ground.get(i).y, 0); // translation to the player position
 
                 Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
 
@@ -633,11 +580,90 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 mTempMatrix = mMVPMatrix.clone();
                 Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
                 // Draw square
-                BABlocks.get(i).draw(scratch);
+                ground.get(i).draw(scratch);
+            }
+
+        }
+        for(int i = 0; i < coins.size(); i++) {
+            if(-coins.get(i).x < -mPlayer.posX + halfScreenWidth+1 && -coins.get(i).x > -mPlayer.posX - halfScreenWidth-1) {
+                Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+                Matrix.translateM(mModelMatrix, 0, -coins.get(i).x, coins.get(i).y, 0); // translation to the player position
+
+                Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+                mTempMatrix = mModelMatrix.clone();
+                Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
+
+                mTempMatrix = mMVPMatrix.clone();
+                Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+                // Draw square
+                coins.get(i).draw(scratch);
+            }
+        }
+        for(int i = 0; i < trampoline.size(); i++) {
+            if(-trampoline.get(i).x < -mPlayer.posX + halfScreenWidth+1 && -trampoline.get(i).x > -mPlayer.posX - halfScreenWidth-1) {
+
+                Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+                Matrix.translateM(mModelMatrix, 0, -trampoline.get(i).x, trampoline.get(i).y, 0); // translation to the player position
+
+                Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+                mTempMatrix = mModelMatrix.clone();
+                Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
+
+                mTempMatrix = mMVPMatrix.clone();
+                Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+                // Draw square
+                trampoline.get(i).draw(scratch);
+            }
+        }
+        for(int i = 0; i < supaTramp.size(); i++) {
+            if(-supaTramp.get(i).x < -mPlayer.posX + halfScreenWidth+1 && -supaTramp.get(i).x > -mPlayer.posX - halfScreenWidth-1) {
+
+                Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+                Matrix.translateM(mModelMatrix, 0, -supaTramp.get(i).x, supaTramp.get(i).y, 0); // translation to the player position
+
+                Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+                mTempMatrix = mModelMatrix.clone();
+                Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
+
+                mTempMatrix = mMVPMatrix.clone();
+                Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+                // Draw square
+                supaTramp.get(i).draw(scratch);
+            }
+        }
+        for(int i = 0; i < BABlocks.size(); i++) {
+
+
+            if(!BABlocks.get(i).deleted) {
+                BABlocks.get(i).update();
+                if(-BABlocks.get(i).x < -mPlayer.posX + halfScreenWidth+1 && -BABlocks.get(i).x > -mPlayer.posX - halfScreenWidth-1) {
+                    Matrix.setIdentityM(mModelMatrix, 0); // initialize to identity matrix
+                    Matrix.translateM(mModelMatrix, 0, -BABlocks.get(i).x, BABlocks.get(i).y, 0); // translation to the player position
+
+                    Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, 1.0f);
+
+                    mTempMatrix = mModelMatrix.clone();
+                    Matrix.multiplyMM(mModelMatrix, 0, mTempMatrix, 0, mRotationMatrix, 0);
+
+                    mTempMatrix = mMVPMatrix.clone();
+                    Matrix.multiplyMM(scratch, 0, mTempMatrix, 0, mModelMatrix, 0);
+                    // Draw square
+                    BABlocks.get(i).draw(scratch);
+                }
             }
             else {
                 BABlocks.remove(i);
             }
+        }
+
+        if(getTime() > currentEnlessModeFinishTimeForTheCurrentSegmentOfTheEnlessModeDoesNotIncludeEasyEnlessModeOrLevelMode && !easyEndless && endless && !firstSwip && !completed){
+            running = false;
+            mPlayer.velX = 0;
+            mPlayer.velY = 0;
+            ((OpenGLES20Activity) mActivityContext).run();
         }
 
         //fps stuff
@@ -648,11 +674,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             frames = 0;
 
             startTime = System.nanoTime();
-
-            if(!endless){
+            if(endless) {
                 checkTrophy();
             }
-
         }
 
     }

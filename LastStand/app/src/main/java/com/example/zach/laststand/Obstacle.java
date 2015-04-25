@@ -73,6 +73,8 @@ public class Obstacle {
     float y;
     float width;
     float height ;
+    float halfWidth;
+    float halfHeight;
 
     public String type;
     public boolean falling = false;
@@ -85,17 +87,19 @@ public class Obstacle {
         this.y = y;
         this.width = w;
         this.height = h;
+        this.halfHeight = h/2;
+        this.halfWidth = w/2;
         this.game = parent;
         this.type= type;
         //this.color = color;
 
         squareCoords = new float[]{
-                -width / 2, height / 2, 0.0f,
-                -width / 2, -height / 2, 0.0f,
-                width / 2, height / 2, 0.0f,
-                -width / 2, -height / 2, 0.0f,
-                width / 2, -height / 2, 0.0f,
-                width / 2, height / 2, 0.0f
+                -halfWidth, halfHeight, 0.0f,
+                -halfWidth, -halfHeight, 0.0f,
+                halfWidth, halfHeight, 0.0f,
+                -halfWidth, -halfHeight, 0.0f,
+                halfWidth, -halfHeight, 0.0f,
+                halfWidth, halfHeight, 0.0f
         };
 
 

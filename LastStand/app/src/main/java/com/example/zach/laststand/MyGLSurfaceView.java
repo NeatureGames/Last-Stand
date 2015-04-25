@@ -54,24 +54,23 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
         float x = e.getX();
         float y = e.getY();
+        if (mRenderer.running) {
+            switch (e.getAction()) {
+                case MotionEvent.ACTION_MOVE:
 
-        switch (e.getAction()) {
-            case MotionEvent.ACTION_MOVE:
+                    if (mRenderer.firstSwip) {
+                        mRenderer.startTimeL = System.currentTimeMillis();
+                        mRenderer.firstSwip = false;
+                    }
 
-                if(mRenderer.firstSwip){
-                    mRenderer.startTimeL = System.currentTimeMillis();
-                    mRenderer.firstSwip = false;
-                }
+                    float dx = x - mPreviousX;
+                    //float dy = y - mPreviousY;
 
-                float dx = x - mPreviousX;
-                //float dy = y - mPreviousY;
-
-                if (dx > 0){    //swipe right
-                    mRenderer.mPlayer.jump(2);
-                }
-                else{
-                    mRenderer.mPlayer.jump(-1);
-                }
+                    if (dx > 0) {    //swipe right
+                        mRenderer.mPlayer.jump(2);
+                    } else {
+                        mRenderer.mPlayer.jump(-1);
+                    }
                /* // reverse direction of rotation above the mid-line
                 if (y > getHeight() / 2) {
                     dx = dx * -1 ;
@@ -86,8 +85,8 @@ public class MyGLSurfaceView extends GLSurfaceView {
                         mRenderer.getAngle() +
                         ((dx + dy) * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
                 requestRender();*/
+            }
         }
-
         mPreviousX = x;
         mPreviousY = y;
         return true;

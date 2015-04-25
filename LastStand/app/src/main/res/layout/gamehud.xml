@@ -9,8 +9,184 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:gravity="center">
+            android:gravity="center_horizontal"
+            android:background="#7FB2EBF2">
+
+            <TextView
+                android:id="@+id/completed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+
+
+                android:layout_marginTop="50dp"
+                android:gravity="top|center_horizontal"
+                android:text="Level Completed!"
+                android:textSize="18pt"
+                android:textColor="#EF5350" />
+
+            <RelativeLayout
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                >
+                <ImageView
+                    android:layout_width="300dp"
+                    android:layout_height="175dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp"
+                    android:text="9"
+                    android:width = "20dp"
+                    android:height = "20dp"
+                    android:gravity="center"
+                    android:background="@drawable/endscreenbox"
+                    android:textSize="30sp"
+                    android:paddingRight="18dp"
+                    android:paddingTop="10dp"
+                    android:id="@+id/level2"
+                    android:layout_column="0" >
+
+                </ImageView>
+
+                <TextView
+                    android:id="@+id/coinSlot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:layout_alignLeft="@+id/level2"
+                    android:layout_alignRight="@+id/level2"
+
+                    android:layout_marginTop="30dp"
+                    android:layout_marginRight="20dp"
+                    android:gravity="top|right"
+                    android:text="Time: 1.224s"
+                    android:textSize="12pt"
+                    android:textColor="#EF5350" />
+                <TextView
+                    android:id="@+id/timeSlot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:layout_alignLeft="@+id/level2"
+                    android:layout_alignRight="@+id/level2"
+
+                    android:layout_marginTop="80dp"
+                    android:layout_marginRight="20dp"
+                    android:gravity="top|right"
+                    android:text="Time: 1.224s"
+                    android:textSize="12pt"
+                    android:textColor="#EF5350"
+                    />
+                <TextView
+                    android:id="@+id/fastestSlot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:layout_alignLeft="@+id/level2"
+                    android:layout_alignRight="@+id/level2"
+
+                    android:layout_marginTop="130dp"
+                    android:layout_marginRight="20dp"
+                    android:gravity="top|right"
+                    android:text="Time: 1.224s"
+                    android:textSize="12pt"
+                    android:textColor="#EF5350" />
+
+                <ImageView
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="15dp"
+                    android:text="9"
+                    android:width = "20dp"
+                    android:height = "20dp"
+                    android:gravity="center"
+                    android:background="@drawable/starfull"
+                    android:textSize="30sp"
+                    android:paddingRight="18dp"
+                    android:paddingTop="10dp"
+                    android:id="@+id/star1"
+                    android:layout_column="0"
+                    >
+
+                </ImageView>
+                <ImageView
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="65dp"
+                    android:text="9"
+                    android:width = "20dp"
+                    android:height = "20dp"
+                    android:gravity="center"
+                    android:background="@drawable/starfull"
+                    android:textSize="30sp"
+                    android:paddingRight="18dp"
+                    android:paddingTop="10dp"
+                    android:id="@+id/star2"
+                    android:layout_column="0" >
+
+                </ImageView>
+                <ImageView
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="115dp"
+                    android:text="9"
+                    android:width = "20dp"
+                    android:height = "20dp"
+                    android:gravity="center"
+                    android:background="@drawable/starfull"
+                    android:textSize="30sp"
+                    android:paddingRight="18dp"
+                    android:paddingTop="10dp"
+                    android:id="@+id/star3"
+                    android:layout_column="0" >
+
+                </ImageView>
+
+
+            </RelativeLayout>
+
             <TableLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="bottom"
+                android:gravity="center">
+
+                <TableRow
+                    android:layout_gravity="bottom"
+                    android:gravity="center"
+
+                    >
+                    <ImageButton
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/home"
+                        android:background="@drawable/homebutton"/>
+                    <ImageButton
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_margin="20dp"
+                        android:id="@+id/restart"
+                        android:background="@drawable/restartbutton"
+                        />
+                    <ImageButton
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/next"
+                        android:background="@drawable/arrowbutton"/>
+                </TableRow>
+                </TableLayout>
+            <!--<TableLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -26,15 +202,15 @@
                     <RelativeLayout
                         android:gravity="center">
                         <ImageView
-                            android:layout_width="300dp"
-                            android:layout_height="200dp"
+                            android:layout_width="250dp"
+                            android:layout_height="175dp"
                             android:layout_gravity="center"
                             android:layout_margin="5dp"
                             android:text="9"
                             android:width = "20dp"
                             android:height = "20dp"
                             android:gravity="center"
-                            android:background="@drawable/banner"
+                            android:background="@drawable/endscreenbox"
                             android:textSize="30sp"
                             android:paddingRight="18dp"
                             android:paddingTop="10dp"
@@ -43,20 +219,92 @@
 
                             </ImageView>
                         <TextView
-                            android:id="@+id/timeSlot"
+                            android:id="@+id/completed"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="50dp"
-                            android:paddingRight="50dp"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
                             android:layout_alignTop="@+id/level2"
                             android:layout_alignLeft="@+id/level2"
                             android:layout_alignRight="@+id/level2"
-                            android:layout_alignBottom="@+id/level2"
 
                             android:layout_marginTop="10dp"
                             android:gravity="top|center_horizontal"
-                            android:text="Level Completed in 9.087 seconds!"
+                            android:text="Level Completed!"
+                            android:textSize="12pt"
                             android:textColor="#FFFFFF" />
+                        <TextView
+                            android:id="@+id/timeSlot"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
+                            android:layout_alignTop="@+id/completed"
+                            android:layout_alignLeft="@+id/level2"
+                            android:layout_alignRight="@+id/level2"
+
+                            android:layout_marginTop="40dp"
+                            android:gravity="top|center_horizontal"
+                            android:text="Time: 1.224s"
+                            android:textSize="10pt"
+                            android:textColor="#FFFFFF" />
+
+                        <TableLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@+id/level2"
+                            android:layout_marginBottom="15dp"
+                            >
+
+
+                            <TableRow
+                                android:gravity="center">
+                                <ImageView
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_gravity="center"
+                                    android:layout_margin="2dp"
+                                    android:text="9"
+                                    android:width = "50dp"
+                                    android:height = "50dp"
+                                    android:gravity="center"
+                                    android:background="@drawable/starfull"
+                                    android:textSize="30sp"
+                                    android:id="@+id/star1"
+                                    android:layout_column="0"/>
+                                <ImageView
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_gravity="center"
+                                    android:layout_margin="2dp"
+                                    android:text="9"
+                                    android:width = "50dp"
+                                    android:height = "50dp"
+                                    android:gravity="center"
+                                    android:background="@drawable/starfull"
+                                    android:textSize="30sp"
+                                    android:paddingRight="18dp"
+                                    android:paddingTop="10dp"
+                                    android:id="@+id/star2"
+                                    android:layout_column="0"/>
+                                <ImageView
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_gravity="center"
+                                    android:layout_margin="2dp"
+                                    android:text="9"
+                                    android:width = "50dp"
+                                    android:height = "50dp"
+                                    android:gravity="center"
+                                    android:background="@drawable/starfull"
+                                    android:textSize="30sp"
+                                    android:paddingRight="18dp"
+                                    android:paddingTop="10dp"
+                                    android:id="@+id/star3"
+                                    android:layout_column="0"/>
+
+                            </TableRow>
+                            </TableLayout>
                     </RelativeLayout>
                 </TableRow>
             </TableLayout>
@@ -98,6 +346,6 @@
                 </TableRow>
 
 
-            </TableLayout>
+            </TableLayout>-->
         </LinearLayout>
     </RelativeLayout>

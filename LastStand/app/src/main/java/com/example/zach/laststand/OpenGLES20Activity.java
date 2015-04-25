@@ -13,6 +13,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,9 +46,16 @@ public class OpenGLES20Activity extends Activity {
                 FrameLayout.LayoutParams.WRAP_CONTENT,
 
                 FrameLayout.LayoutParams.WRAP_CONTENT));
-
-        View mView = getLayoutInflater().inflate(R.layout.gamehud, null);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT);
+        View mView;
+        FrameLayout.LayoutParams params;
+        if(worldnum >= 0) {
+            mView = getLayoutInflater().inflate(R.layout.gamehud, null);
+            params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        }
+        else{
+            mView = getLayoutInflater().inflate(R.layout.enlessgamehud, null);
+            params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        }
 
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -74,18 +83,54 @@ public class OpenGLES20Activity extends Activity {
     public void showDankEndScreen(){
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/manteka.ttf");
 
+        if(worldnum >=0 ) {
+            int numstars = ((MyGLSurfaceView) mGLView).mRenderer.starAmount;
+            ImageView dankStar1 = (ImageView) findViewById(R.id.star1);
+            ImageView dankStar2 = (ImageView) findViewById(R.id.star2);
+            ImageView dankStar3 = (ImageView) findViewById(R.id.star3);
+
+            if (numstars == 2) {
+                dankStar3.setBackgroundResource(R.drawable.starempty);
+            } else if (numstars == 1) {
+                dankStar3.setBackgroundResource(R.drawable.starempty);
+                dankStar2.setBackgroundResource(R.drawable.starempty);
+            } else if (numstars == 0) {
+                dankStar3.setBackgroundResource(R.drawable.starempty);
+                dankStar2.setBackgroundResource(R.drawable.starempty);
+                dankStar1.setBackgroundResource(R.drawable.starempty);
+            }
+        }
+
         RelativeLayout dankness = (RelativeLayout) findViewById(R.id.dankEndScreen);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
 
         params.rightMargin = 0;
         dankness.setLayoutParams(params);
+
+        int coinamount = ((MyGLSurfaceView)mGLView).mRenderer.coinAmount;
+
         double time = ((MyGLSurfaceView)mGLView).mRenderer.getTime();
 
+        TextView dankCompleted = (TextView) findViewById(R.id.completed);
+        if(worldnum < 0){
+            dankCompleted.setText("Game Over!");
+        }
+        dankCompleted.setTypeface(font);
+
         TextView dankTime = (TextView) findViewById(R.id.timeSlot);
-        dankTime.setText("You completed the level in "+time+" seconds");
+        dankTime.setText("Time: "+time+" s");
         dankTime.setTypeface(font);
 
-        Button dankHomeButton = (Button) findViewById(R.id.home);
+        TextView dankBestTime = (TextView) findViewById(R.id.fastestSlot);
+        dankBestTime.setText("Best: "+time+" s");
+        dankBestTime.setTypeface(font);
+
+
+        TextView dankCoins = (TextView) findViewById(R.id.coinSlot);
+        dankCoins.setText("Coins: "+coinamount);
+        dankCoins.setTypeface(font);
+
+        ImageButton dankHomeButton = (ImageButton) findViewById(R.id.home);
         dankHomeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), Menu.class);
@@ -94,7 +139,7 @@ public class OpenGLES20Activity extends Activity {
         });
 
 
-        Button dankReplayButton = (Button) findViewById(R.id.replay);
+        ImageButton dankReplayButton = (ImageButton) findViewById(R.id.restart);
         dankReplayButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), OpenGLES20Activity.class);
@@ -103,7 +148,7 @@ public class OpenGLES20Activity extends Activity {
                 startActivity(intent);
             }
         });
-        Button dankNextButton = (Button) findViewById(R.id.next);
+        ImageButton dankNextButton = (ImageButton) findViewById(R.id.next);
         dankNextButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), OpenGLES20Activity.class);
