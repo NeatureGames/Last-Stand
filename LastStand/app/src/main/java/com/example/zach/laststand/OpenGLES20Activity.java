@@ -2,20 +2,17 @@ package com.example.zach.laststand;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,11 +24,24 @@ public class OpenGLES20Activity extends Activity {
 
     private GLSurfaceView mGLView;
 
+    private Menu menu;
+
     public int levelnum;
     public int worldnum;
+    public int playernum;
+
+    TextView display;
+
+    static String key = "key";
+    boolean check = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        SharedPreferences saves = getSharedPreferences("label", 0);
+        playernum = saves.getInt("character checked",0);
 
         Intent intent = getIntent();
         levelnum = intent.getExtras().getInt("level");
@@ -40,7 +50,7 @@ public class OpenGLES20Activity extends Activity {
         Log.d("Level", "loading level: " + levelnum);
         // Create a GLSurfaceView instance and set it
         // as the ContentView for this Activity
-        mGLView = new MyGLSurfaceView(this,worldnum, levelnum);
+        mGLView = new MyGLSurfaceView(this,worldnum, levelnum,playernum);
         addContentView(mGLView, new FrameLayout.LayoutParams(
 
                 FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -65,6 +75,7 @@ public class OpenGLES20Activity extends Activity {
         params.rightMargin = width;
 
         addContentView(mView, params);
+
     }
     public void run() {
         // Your logic here...
@@ -82,9 +93,11 @@ public class OpenGLES20Activity extends Activity {
 
     public void showDankEndScreen(){
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/manteka.ttf");
+        SharedPreferences saves = getSharedPreferences("label", 0);
+
+        int numstars = ((MyGLSurfaceView) mGLView).mRenderer.starAmount;
 
         if(worldnum >=0 ) {
-            int numstars = ((MyGLSurfaceView) mGLView).mRenderer.starAmount;
             ImageView dankStar1 = (ImageView) findViewById(R.id.star1);
             ImageView dankStar2 = (ImageView) findViewById(R.id.star2);
             ImageView dankStar3 = (ImageView) findViewById(R.id.star3);
@@ -99,6 +112,25 @@ public class OpenGLES20Activity extends Activity {
                 dankStar2.setBackgroundResource(R.drawable.starempty);
                 dankStar1.setBackgroundResource(R.drawable.starempty);
             }
+
+            //saving
+            SharedPreferences.Editor savesEditor = saves.edit();
+            //int totalStars = saves.getInt("total stars", 0);
+            if(levelnum + 1 != 9) {
+                savesEditor.putBoolean("level" + (levelnum + 1) + "world" + (worldnum), true).apply();
+            } else {
+                savesEditor.putBoolean("level" + (0) + "world" + (worldnum + 1), true).apply();
+            }
+            savesEditor.putInt("level"+levelnum+"world"+worldnum+"stars", numstars).apply();
+            //add up stars
+            int totalStars = 0;
+            for(int i = 0; i<Levels.worlds; i++){
+                for(int x = 0; x< Levels.coloums * Levels.rows; x++){
+                    int star = saves.getInt("level"+x+"world"+i+"stars",0);
+                    totalStars+=star;
+                }
+            }
+            savesEditor.putInt("total stars", totalStars).apply();
         }
 
         RelativeLayout dankness = (RelativeLayout) findViewById(R.id.dankEndScreen);
@@ -110,6 +142,14 @@ public class OpenGLES20Activity extends Activity {
         int coinamount = ((MyGLSurfaceView)mGLView).mRenderer.coinAmount;
 
         double time = ((MyGLSurfaceView)mGLView).mRenderer.getTime();
+
+        //saveing
+        int totalCoins = saves.getInt("total coins", 0);
+        SharedPreferences.Editor savesEditor = saves.edit();
+        savesEditor.putInt("total coins",totalCoins + coinamount).apply();
+
+
+
 
         TextView dankCompleted = (TextView) findViewById(R.id.completed);
         if(worldnum < 0){
@@ -152,11 +192,18 @@ public class OpenGLES20Activity extends Activity {
         dankNextButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), OpenGLES20Activity.class);
-                intent.putExtra("level", levelnum+1);
-                intent.putExtra("world", worldnum);
+                if(levelnum + 1 != 9) {
+                    intent.putExtra("level", levelnum+1);
+                    intent.putExtra("world", worldnum);
+                } else {
+                    intent.putExtra("level", 0);
+                    intent.putExtra("world", worldnum+1);
+                }
                 startActivity(intent);
             }
         });
+
+
 
     }
     @Override

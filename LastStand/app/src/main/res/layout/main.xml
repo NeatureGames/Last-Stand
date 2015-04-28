@@ -6,6 +6,81 @@
     android:orientation="vertical"
     android:background="@drawable/background"
     >
+
+    <ImageView
+        android:layout_height="80dp"
+        android:layout_width="80dp"
+        android:layout_gravity="left"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="0dp"
+        android:paddingRight="0dp"
+        android:background="@drawable/iamdone"
+        android:id="@+id/weirdCharacterBorderThing"
+        />
+    <Button
+        android:layout_height="50dp"
+        android:layout_width="50dp"
+        android:layout_gravity="left"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:paddingRight="0dp"
+        android:background="@drawable/characterred"
+        android:id="@+id/characterpic"
+        />
+
+
+    <ImageView
+        android:layout_height="30dp"
+        android:layout_width="30dp"
+        android:layout_gravity="right"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="12dp"
+        android:paddingRight="0dp"
+        android:background="@drawable/testcoin"
+        android:id="@+id/coinIcon"
+        />
+
+    <ImageView
+        android:layout_height="30dp"
+        android:layout_width="30dp"
+        android:layout_gravity="right"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="47dp"
+        android:paddingRight="0dp"
+        android:background="@drawable/starfull"
+        android:id="@+id/starIcon"
+        />
+    <TextView
+        android:layout_width = "fill_parent"
+        android:layout_height="40dp"
+        android:gravity="right"
+        android:layout_gravity="right"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="10dp"
+        android:text="80"
+        android:width = "20dp"
+        android:height = "20dp"
+        android:textSize="30sp"
+        android:id="@+id/totalcoins"
+        android:textColor="#424242"
+        />
+    <TextView
+        android:layout_width = "fill_parent"
+        android:layout_height="40dp"
+        android:gravity="right"
+        android:layout_gravity="right"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="45dp"
+        android:text="800000"
+        android:width = "20dp"
+        android:height = "20dp"
+        android:textSize="30sp"
+        android:id="@+id/totalstars"
+        android:textColor="#424242"
+        />
+
+
+
     <TableLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
@@ -17,42 +92,39 @@
             android:layout_margin="5dp"
             >
             <Button
-                android:layout_width="225dp"
-                android:layout_height="50dp"
+                android:layout_width="200dp"
+                android:layout_height="60dp"
                 android:layout_row="0"
                 android:textColor="#FFFFFF"
                 android:textSize = "20sp"
-                android:text="@string/level_name"
                 android:id="@+id/levels"
                 android:onClick="levels"
                 android:layout_column="0"
-                android:background="@drawable/banner"/>
+                android:background="@drawable/levels"/>
         </TableRow>
         <TableRow
             android:layout_gravity="center"
             android:gravity="center"
             android:layout_margin="5dp">
             <Button
-                android:layout_width="225dp"
-                android:layout_height="50dp"
+                android:layout_width="200dp"
+                android:layout_height="60dp"
                 android:layout_row="0"
-                android:text="Endless"
                 android:id="@+id/endless"
                 android:textColor="#FFFFFF"
                 android:textSize = "20sp"
                 android:gravity="center"
                 android:layout_column="0"
-                android:background="@drawable/banner"/>
+                android:background="@drawable/endless"/>
         </TableRow>
         <TableRow
             android:layout_gravity="center"
             android:gravity="center"
             android:layout_margin="5dp">
             <Button
-                android:layout_width="225dp"
-                android:layout_height="50dp"
+                android:layout_width="200dp"
+                android:layout_height="60dp"
                 android:layout_row="0"
-                android:text="Easy Endless"
                 android:id="@+id/buygold"
                 android:textColor="#FFFFFF"
                 android:textSize = "20sp"
@@ -65,17 +137,24 @@
             android:gravity="center"
             android:layout_margin="5dp">
             <Button
-                android:layout_width="225dp"
-                android:layout_height="50dp"
+                android:layout_width="200dp"
+                android:layout_height="60dp"
                 android:layout_row="0"
-                android:text="Character Select"
                 android:id="@+id/character"
                 android:textColor="#FFFFFF"
                 android:textSize = "20sp"
                 android:gravity="center"
                 android:layout_column="0"
-                android:background="@drawable/banner"/>
+                android:background="@drawable/characters"/>
         </TableRow>
     </TableLayout>
 
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom|left"
+        android:text="clear Data"
+        android:id="@+id/clearData">
+
+    </Button>
 </FrameLayout>

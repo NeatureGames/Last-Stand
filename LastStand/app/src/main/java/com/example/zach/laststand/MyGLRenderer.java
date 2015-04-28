@@ -48,8 +48,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public int goldtrophyTex;
     public int silvertrophyTex;
     public int bronzetrophyTex;
+    public int playerTexNum;
 
-
+    public static int[] charactersTexs = {
+            R.drawable.characterred,
+            R.drawable.charactergreen,
+            R.drawable.characterlightblue,
+            R.drawable.characterpurple,
+            R.drawable.charcterteal,
+    };
     //private Map mTriangle;
     public Player   mPlayer;
 
@@ -333,11 +340,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             supaTramp.add(new Obstacle(levels[worldNum][mapNum][5][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][5][i][1], 1, 5, "supaTramp", supaTrampTex, this));
         }*/
     }
-    public MyGLRenderer(Context context,int world, int level){
+    public MyGLRenderer(Context context,int world, int level, int playerNum){
         mActivityContext = context;
 
+        playerTexNum = playerNum;
 
-
+        Log.d("World", "accessed player: " + playerTexNum);
         Log.d("World", "accessed world: " + world);
         Log.d("Level", "loaded level: " + level);
         if(world <levels.length && world >= 0) {
@@ -375,10 +383,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         grassTex = loadTexture(mActivityContext, R.drawable.grasspillar);
         stoneTex = loadTexture(mActivityContext, R.drawable.stonepillars);
         defaultTex = loadTexture(mActivityContext, R.drawable.ic_launcher);
-        playerTex = loadTexture(mActivityContext, R.drawable.characterred);
+       // playerTex = loadTexture(mActivityContext, R.drawable.characterred);
         goldtrophyTex = loadTexture(mActivityContext, R.drawable.goldtrophy);
         silvertrophyTex = loadTexture(mActivityContext, R.drawable.silvertrophy);
         bronzetrophyTex = loadTexture(mActivityContext, R.drawable.bronzetrophy);
+
+        playerTex = loadTexture(mActivityContext, charactersTexs[playerTexNum]);
 
         mPlayer   = new Player(playerTex, this);
 
@@ -446,8 +456,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
                 }
                 else{
-                    mPlayer.velX = 0;
-                    mPlayer.velY = 0;
                     running = false;
                     for (int i = 0; i < levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1].length; i++) {
                         if ( getTime() < levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1][i][0]){

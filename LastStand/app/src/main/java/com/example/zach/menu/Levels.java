@@ -1,18 +1,15 @@
 package com.example.zach.menu;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.ViewFlipper;
@@ -25,15 +22,15 @@ public class Levels extends FragmentActivity {
 
 
 
-    private int rows = 3;
-    private int coloums = 3;
-    private int worlds = 3;
-    private int buttonMarginsHoriz = 10;
-    private int buttonMarginsVert = 15;
+    public static int rows = 3;
+    public static int coloums = 3;
+    public static int worlds = 3;
+    private int buttonMarginsHoriz = 8;
+    private int buttonMarginsVert = 5;
     private int buttonPaddingTop = 10;
     private int buttonPaddingRight = 21;
-    private int buttonWidth = 70;
-    private int buttonHeight = 90;
+    private int buttonWidth = 80;
+    private int buttonHeight = 80;
     private ViewFlipper viewFlipper;
     private float lastX;
     //Button button;
@@ -154,27 +151,47 @@ public class Levels extends FragmentActivity {
 
                     Button button = new Button(this);
 
+                    SharedPreferences saves = getSharedPreferences("label", 0);
+                    final boolean accessLevel = saves.getBoolean("level" + index + "world" + worldNum, false);
 
                     //Drawable buttonImage = getResources().getDrawable(R.drawable.ic_launcher);
 
-                    button.setBackgroundResource(R.drawable.levelbanner);
-                    button.setText(Integer.toString(index + 1));
-                    //button.setWidth(dpToPix(buttonWidth));
-                  //  button.setHeight(dpToPix(buttonHeight));
-                    button.setPadding( 0,dpToPix(buttonPaddingTop),dpToPix(buttonPaddingRight),0);
-                   // button.setP
-                   // button.setPa
-                   // button.setM(dpToPix(buttonWidth));
-                   // button.setWidth(dpToPix(buttonWidth));
-                   // button.setLayoutGravity
+                    if(index == 0){
+                        button.setBackgroundResource(R.drawable.level1);
+                    } else if(index == 1){
+                        button.setBackgroundResource(R.drawable.level2);
+                    } else if(index == 2){
+                        button.setBackgroundResource(R.drawable.level3);
+                    } else if(index == 3){
+                        button.setBackgroundResource(R.drawable.level4);
+                    } else if(index == 4){
+                        button.setBackgroundResource(R.drawable.level5);
+                    } else if(index == 5){
+                        button.setBackgroundResource(R.drawable.level6);
+                    } else if(index == 6){
+                        button.setBackgroundResource(R.drawable.level7);
+                    } else if(index == 7){
+                        button.setBackgroundResource(R.drawable.level8);
+                    } else if(index == 8) {
+                        button.setBackgroundResource(R.drawable.level9);
+                    }
+                    if(!accessLevel){
+                        button.setAlpha(.5f);
+                        //transparency
+                    }
+
+
+                    button.setPadding(0, dpToPix(buttonPaddingTop), dpToPix(buttonPaddingRight), 0);
 
 
                     button.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View view) {
-                            Intent intent = new Intent(view.getContext(), OpenGLES20Activity.class);
-                            intent.putExtra("level", index);
-                            intent.putExtra("world", worldNum);
-                            startActivity(intent);
+                            if(accessLevel) {
+                                Intent intent = new Intent(view.getContext(), OpenGLES20Activity.class);
+                                intent.putExtra("level", index);
+                                intent.putExtra("world", worldNum);
+                                startActivity(intent);
+                            }
                         }
                     });
                     button.setGravity(Gravity.TOP | Gravity.RIGHT);
