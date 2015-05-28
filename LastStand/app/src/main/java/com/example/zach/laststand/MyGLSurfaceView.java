@@ -15,6 +15,7 @@
  */
 package com.example.zach.laststand;
 
+import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
@@ -27,10 +28,10 @@ import android.view.MotionEvent;
 public class MyGLSurfaceView extends GLSurfaceView {
 
     public final MyGLRenderer mRenderer;
-
+    public final Context context;
     public MyGLSurfaceView(Context context,int world, int level, int player) {
         super(context);
-
+        this.context = context;
         // Create an OpenGL ES 2.0 context.
         setEGLContextClientVersion(2);
 
@@ -54,7 +55,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
         float x = e.getX();
         float y = e.getY();
-        if (mRenderer.running) {
+        if (mRenderer.running && !((OpenGLES20Activity) context).paussssed) {
             switch (e.getAction()) {
                 case MotionEvent.ACTION_MOVE:
 

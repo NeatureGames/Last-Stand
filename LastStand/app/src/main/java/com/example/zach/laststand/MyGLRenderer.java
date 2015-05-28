@@ -79,11 +79,20 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     int worldNum = 0;
     int coinAmount = 0;
     int endlessLevelAmount = 0;
+    int score = 0;
+    int levelDiffculty = 0;
+    int lastLevelDificulty = 0;
     public int starAmount = 0;
+
+    int scoreMultiplier = 1;
+    int increaseScoreMulAt = 2;
+    public int coinMultiplier = 1;
+    int increaseCoinMulAt = 6;
+    int trophyCount = 0;
 
     float pastTropyX;
 
-    long startTimeL;
+    long startTimeL = 0;
     float currentEnlessModeFinishTimeForTheCurrentSegmentOfTheEnlessModeDoesNotIncludeEasyEnlessModeOrLevelMode = 0;
     boolean firstSwip = true;
 
@@ -187,26 +196,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
             },
-
-            /*{
-                    {{3.5f,-17.5f},{2.5f,-17.5f},{0.5f,-17.5f},{4.5f,-17.5f},{4.5f,-17.5f},{6.5f,-17.5f},{7.5f,-17.5f},{8.5f,-17.5f},{9.5f,-17.5f},{10.5f,-17.5f},{11.5f,-17.5f},{13.5f,-17.5f},{14.5f,-17.5f},{15.5f,-17.5f},},{},{{3.5f,-14.5f},{7.5f,-14.5f},{10.5f,-14.5f},{14.5f,-14.5f}}
-                    /*{ //ground
-                            {0, -2.25f},
-                            {2, -2.25f},
-                            {3, -2.25f},
-                            {4, -2.25f},
-                            {5, -2.25f},
-                            {7, -2.25f},
-                            {9, -2.25f},
-                            {10, -2.25f},
-                    },
-                    { //trampolines
-
-                    },
-                    { //coins
-
-                    }
-            }*/
     };
     /* world /*levels  /*level  /*obstacles  /*x,y*/
 
@@ -241,14 +230,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public float fps = 60;
 
     public double getTime(){
-        //Log.d("Level", "level error: Level " + (System.currentTimeMillis() - startTimeL) + " does not exist");
         return  (double)(System.currentTimeMillis() - startTimeL)/1000;
 
     }
     public void changeSeg(){
         endlessLevelAmount++;
 
-        int levelDiffculty = (int) Math.floor(Math.random()*(endlessLevelAmount)*2);
+        levelDiffculty = (int) Math.floor(Math.random()*(endlessLevelAmount)*2);
 
         if((int) Math.floor(levelDiffculty/levels[0].length) < levels.length) {
             worldNum = (int) Math.floor(levelDiffculty / levels[0].length);
@@ -259,6 +247,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mapNum = levelDiffculty%levels[0].length;
         for (int i = 0; i < blacklist.length; i++){
             if(worldNum == blacklist[i][0] && mapNum == blacklist[i][1]){
+                endlessLevelAmount--; //cancel out the above ++
                 changeSeg();
                 return;
             }
@@ -267,22 +256,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         EnlessModeLevels.add(mapNum);
     }
     public void deleteLastLevel(){
-        for (int i = 0; i < levels[EnlessModeWorlds.get(endlessLevelAmount-2)][EnlessModeLevels.get(endlessLevelAmount-2)][0].length; i++) {
+        int world = EnlessModeWorlds.get(endlessLevelAmount-2);
+        int level = EnlessModeLevels.get(endlessLevelAmount-2);
+        for (int i = 0; i < levels[world][level][0].length; i++) {
             ground.remove(0);
         }
-        for (int i = 0; i < levels[EnlessModeWorlds.get(endlessLevelAmount-2)][EnlessModeLevels.get(endlessLevelAmount-2)][1].length; i++) {
+        for (int i = 0; i < levels[world][level][1].length; i++) {
             trampoline.remove(0);
         }
-        for (int i = 0; i < levels[EnlessModeWorlds.get(endlessLevelAmount-2)][EnlessModeLevels.get(endlessLevelAmount-2)][3].length; i++) {
-            BABlocks.remove(0);
-        }
-        for (int i = 0; i < levels[EnlessModeWorlds.get(endlessLevelAmount-2)][EnlessModeLevels.get(endlessLevelAmount-2)][5].length; i++) {
+        for (int i = 0; i < levels[world][level][5].length; i++) {
             supaTramp.remove(0);
         }
+
+        Log.d("Deleting", "World: "+world+"Level: "+level);
     }
     public void createEndlessMap(){
         if(!createObjectQueue){ // first time running function in queue, start building process
             Log.d("Queue", "Started Queue");
+            lastLevelDificulty = levelDiffculty;
             changeSeg();
             if(worldNum > levels.length-1){
                 worldNum = levels.length-1;
@@ -322,23 +313,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 }
             }
         }
-       /* changeSeg();
-        if(worldNum > levels.length-1){
-            worldNum = levels.length-1;
-        }
-        for (int i = 0; i < levels[worldNum][mapNum][0].length; i++) {
-            ground.add(new Obstacle(levels[worldNum][mapNum][0][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][0][i][1], 1, 5, "ground", grassTex, this));
-        }
-        for (int i = 0; i < levels[worldNum][mapNum][1].length; i++) {
-            trampoline.add(new Obstacle(levels[worldNum][mapNum][1][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][1][i][1], 1, 5, "tramp", trampTex, this));
-        }
-
-        for (int i = 0; i < levels[worldNum][mapNum][3].length; i++) {
-            BABlocks.add(new Obstacle(levels[worldNum][mapNum][3][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][3][i][1], 1, 5, "BABlock", stoneTex, this));
-        }
-        for (int i = 0; i < levels[worldNum][mapNum][5].length; i++) {
-            supaTramp.add(new Obstacle(levels[worldNum][mapNum][5][i][0] + trophy.x + 1.5f, levels[worldNum][mapNum][5][i][1], 1, 5, "supaTramp", supaTrampTex, this));
-        }*/
     }
     public MyGLRenderer(Context context,int world, int level, int playerNum){
         mActivityContext = context;
@@ -415,8 +389,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         if(endless){
             changeSeg();
             currentEnlessModeFinishTimeForTheCurrentSegmentOfTheEnlessModeDoesNotIncludeEasyEnlessModeOrLevelMode = levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1][0][0];
+            //((OpenGLES20Activity) mActivityContext).updateTime(currentEnlessModeFinishTimeForTheCurrentSegmentOfTheEnlessModeDoesNotIncludeEasyEnlessModeOrLevelMode);
+            ((OpenGLES20Activity) mActivityContext).updateCoins(levels[EnlessModeWorlds.get(endlessLevelAmount-1)][EnlessModeLevels.get(endlessLevelAmount-1)][2].length);
         }
-
+        else{
+            //checkTrophy();
+            ((OpenGLES20Activity) mActivityContext).updateCoins(levels[worldNum][mapNum][2].length);
+        }
+        ((OpenGLES20Activity) mActivityContext).updateScore();
         mPlayer   = new Player(playerTex, this);
         for (int i = 0; i < levels[worldNum][mapNum][0].length; i++) {
             ground.add(new Obstacle(levels[worldNum][mapNum][0][i][0], levels[worldNum][mapNum][0][i][1], 1, 5, "ground", grassTex, this));
@@ -453,6 +433,20 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                         }
                         trophy = new Obstacle(levels[worldNum][mapNum][4][0][0] + trophy.x + 1.5f, levels[worldNum][mapNum][4][0][1], .5f, .5f, "trophy", goldtrophyTex, this);
                         startTimeL = System.currentTimeMillis();
+
+                        trophyCount++;
+                        if(trophyCount >= increaseCoinMulAt){
+                            coinMultiplier++;
+                        }
+
+                        scoreMultiplier+=((trophyCount % increaseScoreMulAt) == 0)?1:0;
+                        score += (lastLevelDificulty + 1)*10*scoreMultiplier;
+
+                        ((OpenGLES20Activity) mActivityContext).updateScore();
+
+                        ((OpenGLES20Activity) mActivityContext).updateCoins(levels[EnlessModeWorlds.get(endlessLevelAmount - 1)][EnlessModeLevels.get(endlessLevelAmount - 1)][2].length);
+
+                        Log.d("End Game", "score: " + score);
 
                 }
                 else{
@@ -671,7 +665,16 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             running = false;
             mPlayer.velX = 0;
             mPlayer.velY = 0;
+            completed = true;
             ((OpenGLES20Activity) mActivityContext).run();
+        }
+        if (!firstSwip && !completed && !((OpenGLES20Activity) mActivityContext).paussssed){
+            if(endless) {
+                ((OpenGLES20Activity) mActivityContext).updateTime(currentEnlessModeFinishTimeForTheCurrentSegmentOfTheEnlessModeDoesNotIncludeEasyEnlessModeOrLevelMode);
+            }
+            else{
+                checkTrophy();
+            }
         }
 
         //fps stuff
@@ -682,9 +685,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             frames = 0;
 
             startTime = System.nanoTime();
-            if(endless) {
-                checkTrophy();
-            }
         }
 
     }
@@ -693,11 +693,14 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             if ( getTime() < levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1][i][0]){
                 if(i == 2){
                    trophy.mTextureDataHandle = goldtrophyTex;
+                    ((OpenGLES20Activity) mActivityContext).updateTime(levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1][i][0]);
                 }
                 else if(i == 1){
                    trophy.mTextureDataHandle = silvertrophyTex;
+                    ((OpenGLES20Activity) mActivityContext).updateTime(levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1][i][0]);
                 } else if(i == 0){
                     trophy.mTextureDataHandle = bronzetrophyTex;
+                    ((OpenGLES20Activity) mActivityContext).updateTime(levels[worldNum][mapNum][levels[worldNum][mapNum].length - 1][i][0]);
                 } else {
                     trophy.mTextureDataHandle = bronzetrophyTex;
                 }

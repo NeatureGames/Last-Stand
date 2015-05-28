@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -29,6 +30,15 @@ public class OpenGLES20Activity extends Activity {
     public int levelnum;
     public int worldnum;
     public int playernum;
+
+    public boolean  paussssed = false;
+
+    public double doubletime;
+
+    TextView coinDisplay;
+    TextView scoreDisplay;
+    TextView timeDisplay;
+    ImageView pauseButton;
 
     TextView display;
 
@@ -57,6 +67,28 @@ public class OpenGLES20Activity extends Activity {
 
                 FrameLayout.LayoutParams.WRAP_CONTENT));
         View mView;
+
+        FrameLayout.LayoutParams pause;
+        mView = getLayoutInflater().inflate(R.layout.pausemenu, null);
+        pause = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        addContentView(mView, pause);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        //int height = size.y;
+        pause.rightMargin = width;
+
+        FrameLayout.LayoutParams hud;
+        mView = getLayoutInflater().inflate(R.layout.endlessoverlay, null);
+        hud = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+
+
+
+
+        addContentView(mView, hud);
+
         FrameLayout.LayoutParams params;
         if(worldnum >= 0) {
             mView = getLayoutInflater().inflate(R.layout.gamehud, null);
@@ -67,14 +99,26 @@ public class OpenGLES20Activity extends Activity {
             params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         }
 
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
+
         //int height = size.y;
         params.rightMargin = width;
 
         addContentView(mView, params);
+        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/manteka.ttf");
+
+        coinDisplay = (TextView) findViewById(R.id.coins);
+        coinDisplay.setTypeface(font);
+        scoreDisplay = (TextView) findViewById(R.id.HUDscore);
+        scoreDisplay.setTypeface(font);
+        timeDisplay = (TextView) findViewById(R.id.time);
+        timeDisplay.setTypeface(font);
+        pauseButton = (ImageView) findViewById(R.id.pausebutton);
+
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                showPauseMenu();
+            }
+        });
 
     }
     public void run() {
@@ -90,13 +134,100 @@ public class OpenGLES20Activity extends Activity {
             }
         });
     }
+    public void updateScore(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // This code will always run on the UI thread, therefore is safe to modify UI elements.
+                int score = ((MyGLSurfaceView) mGLView).mRenderer.score;
+                scoreDisplay.setText(""+score+"");
+            }
+        });
+    }
+    public void updateTime(final float checktime){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // This code will always run on the UI thread, therefore is safe to modify UI elements.
+                double time = ((MyGLSurfaceView)mGLView).mRenderer.getTime();
+
+                double displayTime = (Math.round((checktime-time)*100.0)/100.0);
+                timeDisplay.setText(""+displayTime+"s");
+                //float maxtime = ((MyGLSurfaceView)mGLView).mRenderer.levels[worldnum][levelnum][levels[worldNum][mapNum].length - 1][i][0]
+            }
+        });
+    }
+    public void updateCoins(final int totalcoinamt){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // This code will always run on the UI thread, therefore is safe to modify UI elements.
+                int coinamount = totalcoinamt - ((MyGLSurfaceView)mGLView).mRenderer.coins.size()  ;
+                coinDisplay.setText(coinamount+"/"+totalcoinamt);
+            }
+        });
+    }
+    public void showPauseMenu(){
+        if(!paussssed) {
+            paussssed = true;
+
+            doubletime = System.currentTimeMillis();
+            ImageButton dankHomeButton = (ImageButton) findViewById(R.id.homePause);
+            dankHomeButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    Intent intent = new Intent(view.getContext(), Menu.class);
+                    startActivity(intent);
+                }
+            });
+
+
+            ImageButton dankReplayButton = (ImageButton) findViewById(R.id.play);
+            dankReplayButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    Display display = getWindowManager().getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    int width = size.x;
+                    //int height = size.y;
+
+
+                    ((MyGLSurfaceView) mGLView).mRenderer.startTimeL += System.currentTimeMillis() - doubletime;
+                    RelativeLayout dankness = (RelativeLayout) findViewById(R.id.pausescreen);
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+
+                    params.rightMargin = width;
+                    dankness.setLayoutParams(params);
+
+                    paussssed = false;
+                }
+            });
+            ImageButton dankNextButton = (ImageButton) findViewById(R.id.restartPause);
+            dankNextButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    paussssed = false;
+                    Intent intent = new Intent(view.getContext(), OpenGLES20Activity.class);
+                    intent.putExtra("level", levelnum);
+                    intent.putExtra("world", worldnum);
+                    startActivity(intent);
+                }
+            });
+
+            RelativeLayout dankness = (RelativeLayout) findViewById(R.id.pausescreen);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+
+            params.rightMargin = 0;
+            dankness.setLayoutParams(params);
+        }
+    }
 
     public void showDankEndScreen(){
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/manteka.ttf");
         SharedPreferences saves = getSharedPreferences("label", 0);
 
         int numstars = ((MyGLSurfaceView) mGLView).mRenderer.starAmount;
-
+        int score = ((MyGLSurfaceView) mGLView).mRenderer.score;
+        double time = ((MyGLSurfaceView)mGLView).mRenderer.getTime();
+        float previousBestTime = 0;
         if(worldnum >=0 ) {
             ImageView dankStar1 = (ImageView) findViewById(R.id.star1);
             ImageView dankStar2 = (ImageView) findViewById(R.id.star2);
@@ -121,7 +252,20 @@ public class OpenGLES20Activity extends Activity {
             } else {
                 savesEditor.putBoolean("level" + (0) + "world" + (worldnum + 1), true).apply();
             }
-            savesEditor.putInt("level"+levelnum+"world"+worldnum+"stars", numstars).apply();
+
+            previousBestTime = saves.getFloat("level"+levelnum+"world"+worldnum+"bestTime",0);
+            if(previousBestTime > time) {
+                savesEditor.putFloat("level"+levelnum+"world"+worldnum+"bestTime", (float)time).apply();
+                previousBestTime = (float) time;
+            }
+            else if(previousBestTime == 0){
+                savesEditor.putFloat("level"+levelnum+"world"+worldnum+"bestTime", (float)time).apply();
+                previousBestTime = (float) time;
+            }
+
+            int previousStarAmount = saves.getInt("level"+levelnum+"world"+worldnum+"stars",0);
+            if(numstars > previousStarAmount) savesEditor.putInt("level"+levelnum+"world"+worldnum+"stars", numstars).apply();
+
             //add up stars
             int totalStars = 0;
             for(int i = 0; i<Levels.worlds; i++){
@@ -133,38 +277,58 @@ public class OpenGLES20Activity extends Activity {
             savesEditor.putInt("total stars", totalStars).apply();
         }
 
-        RelativeLayout dankness = (RelativeLayout) findViewById(R.id.dankEndScreen);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout dankness = (LinearLayout) findViewById(R.id.dankEndScreen);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
 
         params.rightMargin = 0;
         dankness.setLayoutParams(params);
 
-        int coinamount = ((MyGLSurfaceView)mGLView).mRenderer.coinAmount;
+        int coinMul = ((MyGLSurfaceView)mGLView).mRenderer.coinMultiplier;
+        int coinamount = ((MyGLSurfaceView)mGLView).mRenderer.coinAmount*coinMul;
 
-        double time = ((MyGLSurfaceView)mGLView).mRenderer.getTime();
+
+
 
         //saveing
         int totalCoins = saves.getInt("total coins", 0);
         SharedPreferences.Editor savesEditor = saves.edit();
-        savesEditor.putInt("total coins",totalCoins + coinamount).apply();
+        savesEditor.putInt("total coins",totalCoins + (coinamount)).apply();
 
 
 
 
-        TextView dankCompleted = (TextView) findViewById(R.id.completed);
+
+
         if(worldnum < 0){
-            dankCompleted.setText("Game Over!");
+            TextView dankendCompleted = (TextView) findViewById(R.id.enlesscompleted);
+            TextView dankScore = (TextView) findViewById(R.id.score);
+            dankendCompleted.setText("Game Over!");
+            dankendCompleted.setTypeface(font);
+            dankScore.setText("Score: " + score);
+            dankScore.setTypeface(font);
+
+            TextView dankHighScore = (TextView) findViewById(R.id.fastestSlot);
+
+            int previousbest = saves.getInt("world"+worldnum+"highest", 0);
+            if(score>previousbest){
+                savesEditor.putInt("world"+worldnum+"highest",score).apply();
+                previousbest = score;
+            }
+            dankHighScore.setText("High Score: "+previousbest);
+            dankHighScore.setTypeface(font);
         }
-        dankCompleted.setTypeface(font);
+        if(worldnum>=0) {
+            TextView dankcompleted = (TextView) findViewById(R.id.enlesscompleted);
+            TextView dankTime = (TextView) findViewById(R.id.timeSlot);
+            dankcompleted.setText("Level Complete");
+            dankcompleted.setTypeface(font);
+            dankTime.setText("Time: " + time + " s");
+            dankTime.setTypeface(font);
 
-        TextView dankTime = (TextView) findViewById(R.id.timeSlot);
-        dankTime.setText("Time: "+time+" s");
-        dankTime.setTypeface(font);
-
-        TextView dankBestTime = (TextView) findViewById(R.id.fastestSlot);
-        dankBestTime.setText("Best: "+time+" s");
-        dankBestTime.setTypeface(font);
-
+            TextView dankBestTime = (TextView) findViewById(R.id.fastestSlot);
+            dankBestTime.setText("Best: " + previousBestTime + " s");
+            dankBestTime.setTypeface(font);
+        }
 
         TextView dankCoins = (TextView) findViewById(R.id.coinSlot);
         dankCoins.setText("Coins: "+coinamount);

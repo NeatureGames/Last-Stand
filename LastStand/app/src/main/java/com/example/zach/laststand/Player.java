@@ -380,6 +380,12 @@ public class Player {
             if(dir != ""){
                 game.coinAmount++;
                 game.coins.remove(i);
+                if(game.endless){
+                    ((OpenGLES20Activity) game.mActivityContext).updateCoins(game.levels[game.EnlessModeWorlds.get(game.endlessLevelAmount-1)][game.EnlessModeLevels.get(game.endlessLevelAmount-1)][2].length);
+                }
+                else{
+                    ((OpenGLES20Activity) game.mActivityContext).updateCoins(game.levels[game.worldNum][game.mapNum][2].length);
+                }
             }
         }
         for(int i = 0; i<game.trampoline.size(); i++){

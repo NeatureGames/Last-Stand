@@ -26,6 +26,7 @@ public class Menu extends Activity {
     Button button;
     TextView text;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +37,8 @@ public class Menu extends Activity {
     }
     @Override
     public void onResume(){
+        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/manteka.ttf");
+
         super.onResume();
     //saving stuff
         SharedPreferences saves = getSharedPreferences("label", 0);
@@ -50,20 +53,19 @@ public class Menu extends Activity {
 
         text = (TextView) findViewById(R.id.totalcoins);
         text.setText("" + coinAmount + "");
-
+        text.setTypeface(font);
 
 
 
         int starAmount = saves.getInt("total stars", 0);
         text = (TextView) findViewById(R.id.totalstars);
         text.setText("" + starAmount + "");
+        text.setTypeface(font);
     }
     public void addListenerOnButton() {
 
         final Context context = this;
         Typeface font = Typeface.createFromAsset(getAssets(), "fonts/manteka.ttf");
-
-
 
         button = (Button) findViewById(R.id.levels);
         button.setGravity(Gravity.CENTER);
@@ -76,12 +78,13 @@ public class Menu extends Activity {
 
                 Intent intent = new Intent(context, Levels.class);
                 startActivity(intent);
+                finish();
 
             }
 
         });
 
-        button = (Button) findViewById(R.id.endless);
+        button = (Button) findViewById(R.id.extras);
         button.setGravity(Gravity.CENTER);
         button.setTypeface(font);
 
@@ -90,33 +93,12 @@ public class Menu extends Activity {
             @Override
             public void onClick(View arg0) {
 
-                Intent intent = new Intent(context, OpenGLES20Activity.class);
-                intent.putExtra("level", 1);
-                intent.putExtra("world", -1);
+                Intent intent = new Intent(context, Extras.class);
                 startActivity(intent);
-
+                finish();
             }
 
         });
-
-        button = (Button) findViewById(R.id.buygold);
-        button.setGravity(Gravity.CENTER);
-        button.setTypeface(font);
-
-        button.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-
-                Intent intent = new Intent(context, OpenGLES20Activity.class);
-                intent.putExtra("level", 1);
-                intent.putExtra("world", -2);
-                startActivity(intent);
-
-            }
-
-        });
-
         button = (Button) findViewById(R.id.character);
         button.setGravity(Gravity.CENTER);
         button.setTypeface(font);
@@ -128,10 +110,28 @@ public class Menu extends Activity {
 
                 Intent intent = new Intent(context, Characters.class);
                 startActivity(intent);
-
+                finish();
             }
 
         });
+
+        button = (Button) findViewById(R.id.shop);
+        button.setGravity(Gravity.CENTER);
+        button.setTypeface(font);
+
+        button.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                Intent intent = new Intent(context, Shop.class);;
+                startActivity(intent);
+                finish();
+            }
+
+        });
+
+
 
         button = (Button) findViewById(R.id.characterpic);
         button.setGravity(Gravity.CENTER);
@@ -144,7 +144,7 @@ public class Menu extends Activity {
 
                 Intent intent = new Intent(context, Characters.class);
                 startActivity(intent);
-
+                finish();
             }
 
         });

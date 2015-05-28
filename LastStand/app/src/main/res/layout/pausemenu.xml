@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/pausescreen"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_horizontal"
+        android:background="#7FB2EBF2">
+
+        <TextView
+            android:id="@+id/completed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+
+
+            android:layout_marginTop="50dp"
+            android:gravity="top|center_horizontal"
+            android:text="Paused"
+            android:textSize="18pt"
+            android:textColor="#EF5350" />
+
+
+
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="bottom"
+            android:gravity="center">
+
+            <TableRow
+                android:layout_gravity="bottom"
+                android:gravity="center"
+
+                >
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/homePause"
+                    android:background="@drawable/homebutton"/>
+                <ImageButton
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_margin="20dp"
+                    android:id="@+id/play"
+                    android:background="@drawable/play"
+                    />
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/restartPause"
+                    android:background="@drawable/restartbutton"/>
+            </TableRow>
+        </TableLayout>
+
+    </LinearLayout>
+</RelativeLayout>

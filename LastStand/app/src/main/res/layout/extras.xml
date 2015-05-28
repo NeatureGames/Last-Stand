@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/backbutton"
+        android:id="@+id/backButton"/>
+
+    <RelativeLayout
+        android:id="@+id/endless"
+        android:layout_width="250dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/endlessImg"
+            android:layout_width="250dp"
+            android:layout_height="80dp"
+            android:background="@drawable/endless"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/unlockAmount1"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="10000"
+            android:gravity="right"
+            android:textSize="28sp"
+            android:textColor="#424242"
+            android:layout_gravity="left|center_vertical"
+            android:textIsSelectable="false"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+
+            android:id="@+id/starIcon1"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/starfull"
+            android:layout_gravity="right|center_vertical"
+            android:layout_alignTop="@+id/unlockAmount1"
+            android:layout_toRightOf="@+id/unlockAmount1"
+            android:layout_toEndOf="@+id/unlockAmount1"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/easyEndless"
+        android:layout_width="250dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/easyEndlessImg"
+            android:layout_width="250dp"
+            android:layout_height="80dp"
+            android:background="@drawable/relaxed"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/unlockAmount2"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="10000"
+            android:gravity="right"
+            android:textSize="28sp"
+            android:textColor="#424242"
+            android:layout_gravity="left|center_vertical"
+            android:textIsSelectable="false"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+
+            android:id="@+id/starIcon2"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/starfull"
+            android:layout_gravity="right|center_vertical"
+            android:layout_alignTop="@+id/unlockAmount2"
+            android:layout_toRightOf="@+id/unlockAmount2"
+            android:layout_toEndOf="@+id/unlockAmount2"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>
